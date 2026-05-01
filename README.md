@@ -29,6 +29,9 @@ tic-tac-toe/
 │   ├── App.js              # Main app with game logic
 │   ├── App.css             # Styling
 │   └── index.js            # Entry point
+├── .eslintrc.json          # ESLint configuration
+├── .eslintignore           # ESLint ignore patterns
+├── tsconfig.json           # TypeScript configuration
 ├── package.json            # Dependencies and scripts
 └── README.md              # This file
 ```
@@ -95,6 +98,27 @@ tic-tac-toe/
 - `npm build` - Build the app for production
 - `npm test` - Run tests
 - `npm eject` - Eject from Create React App (one-way operation)
+- `npm run lint` - Run ESLint to check code quality
+- `npm run lint:fix` - Automatically fix ESLint issues
+- `npm run type-check` - Run TypeScript type checking
+- `npm run verify` - Run full verification (type-check + lint + build)
+
+## Verification Tools
+
+This project includes the following verification tools:
+
+- **TypeScript** - Type checking and IntelliSense support
+  - Configuration: `tsconfig.json`
+  - Type definitions: `@types/react`, `@types/react-dom`, `@types/node`
+  - Supports both JavaScript and TypeScript files
+  - Ready for gradual migration to TypeScript
+- **ESLint** - JavaScript linting with React-specific rules
+  - Configuration: `.eslintrc.json`
+  - Ignore patterns: `.eslintignore`
+  - Plugins: `eslint-plugin-react`, `eslint-plugin-react-hooks`
+- **Build Verification** - Production build testing via `npm run verify`
+
+Run `npm run verify` before committing to ensure code quality and buildability.
 
 ## License
 
