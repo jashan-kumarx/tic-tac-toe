@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "A Tic Tac Toe game built with React",
   "private": true,
+  "homepage": "https://jashan-kumarx.github.io/tic-tac-toe",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -15,13 +16,16 @@
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.1",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "gh-pages": "^6.3.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "type-check": "tsc --noEmit",
