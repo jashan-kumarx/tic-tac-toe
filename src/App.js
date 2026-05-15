@@ -96,6 +96,10 @@ const App = () => {
     );
   });
 
+  const statusClassName = `status ${
+    winner ? "winner" : isDraw ? "draw" : ""
+  }`;
+
   return (
     <div className="game">
       <div className="game-header">
@@ -103,13 +107,18 @@ const App = () => {
       </div>
       <div className="game-container">
         <div className="game-board">
-          <div className="status">{status}</div>
+          <div className={statusClassName} role="status" aria-live="polite">
+            {status}
+          </div>
           <Board
             squares={currentSquares}
             onClick={handleClick}
             winningLine={winningLine}
           />
-          <button className="restart-button" onClick={restartGame}>
+          <button
+            className="restart-button"
+            onClick={restartGame}
+            aria-label="Restart the game">
             Restart Game
           </button>
         </div>

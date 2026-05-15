@@ -10,6 +10,7 @@ const Board = ({ squares, onClick, winningLine }) => {
         value={squares[i]}
         onClick={() => onClick(i)}
         isWinning={isWinning}
+        index={i}
       />
     );
   };
