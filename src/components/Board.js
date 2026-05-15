@@ -1,14 +1,35 @@
-import React from "react";
 import Square from "./Square";
 
+/**
+ * @typedef {Object} BoardProps
+ * @property {(string | null)[]} squares
+ * @property {(index: number) => void} onClick
+ * @property {number[] | null | undefined} [winningLine]
+ */
+
+/**
+ * @param {BoardProps} props
+ * @returns {JSX.Element}
+ */
 const Board = ({ squares, onClick, winningLine }) => {
+  /**
+   * @param {number} i
+   * @returns {JSX.Element}
+   */
   const renderSquare = (i) => {
-    const isWinning = winningLine && winningLine.includes(i);
+    /**
+     * @type {boolean | undefined}
+     */
+    const isWinning = winningLine ? winningLine.includes(i) : undefined;
+    /**
+     * @type {React.MouseEventHandler<HTMLButtonElement>}
+     */
+    const handleSquareClick = () => onClick(i);
     return (
       <Square
         key={i}
         value={squares[i]}
-        onClick={() => onClick(i)}
+        onClick={handleSquareClick}
         isWinning={isWinning}
         index={i}
       />

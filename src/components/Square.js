@@ -1,6 +1,20 @@
-import React from "react";
+/**
+ * @typedef {Object} SquareProps
+ * @property {string | null} value
+ * @property {React.MouseEventHandler<HTMLButtonElement>} onClick
+ * @property {boolean} [isWinning]
+ * @property {number} index
+ */
 
+/**
+ * @param {SquareProps} props
+ * @returns {JSX.Element}
+ */
 const Square = ({ value, onClick, isWinning, index }) => {
+  /**
+   * @param {number} idx
+   * @returns {string}
+   */
   const getPositionLabel = (idx) => {
     const row = Math.floor(idx / 3) + 1;
     const col = (idx % 3) + 1;
