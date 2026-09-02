@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import Board from "./components/Board";
 
 const App = () => {
@@ -8,6 +8,10 @@ const App = () => {
     },
   ]);
   const [currentMove, setCurrentMove] = useState(0);
+  // Saved results from the SQLite score API (server/index.js).
+  const [scores, setScores] = useState([]);
+  const [dbError, setDbError] = useState(null);
+  const recordedRef = useRef(false);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove].squares;
 
@@ -48,6 +52,7 @@ const App = () => {
 
     const nextSquares = currentSquares.slice();
     nextSquares[i] = xIsNext ? "X" : "O";
+    recordedRef.current = false; // a new move means this position isn't saved yet
 
     // Create new history up to current move and add new move
     const nextHistory = [
@@ -65,6 +70,7 @@ const App = () => {
   const restartGame = () => {
     setHistory([{ squares: Array(9).fill(null) }]);
     setCurrentMove(0);
+    recordedRef.current = false;
   };
 
   // Determine game status
@@ -72,6 +78,32 @@ const App = () => {
   const winner = winnerInfo?.winner;
   const winningLine = winnerInfo?.line;
   const isDraw = !winner && currentSquares.every((square) => square !== null);
+
+  const refreshScores = useCallback(() => {
+    fetch("/api/scores")
+      .then((r) => r.json())
+      .then((rows) => {
+        setScores(rows);
+        setDbError(null);
+      })
+      .catch(() => setDbError("score API unreachable — is the db server runner started?"));
+  }, []);
+
+  useEffect(refreshScores, [refreshScores]);
+
+  // Record each finished game once into the SQLite score API (best-effort).
+  const gameOver = Boolean(winner) || isDraw;
+  useEffect(() => {
+    if (!gameOver || recordedRef.current) return;
+    recordedRef.current = true;
+    fetch("/api/scores", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ winner: winner || "draw" }),
+    })
+      .then(refreshScores)
+      .catch(() => setDbError("score API unreachable — is the db server runner started?"));
+  }, [gameOver, winner, refreshScores]);
 
   let status;
   if (winner) {
@@ -116,6 +148,20 @@ const App = () => {
         <div className="game-info">
           <h3>Move History</h3>
           <ol>{moves}</ol>
+          <h3 data-cmp="ttt.scores_title">Saved Results (SQLite)</h3>
+          {dbError ? (
+            <p className="db-error" data-cmp="ttt.scores_error">{dbError}</p>
+          ) : scores.length === 0 ? (
+            <p data-cmp="ttt.scores_empty">No games recorded yet.</p>
+          ) : (
+            <ol data-cmp="ttt.scores_list">
+              {scores.map((s) => (
+                <li key={s.id}>
+                  {s.winner === "draw" ? "Draw" : `${s.winner} won`} — {s.played_at}
+                </li>
+              ))}
+            </ol>
+          )}
         </div>
       </div>
     </div>
