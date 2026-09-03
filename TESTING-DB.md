@@ -10,16 +10,20 @@ the dev-provisioned databases feature end-to-end.
    SQLite → name it e.g. `ttt-scores`.
 2. **Add the API runner** — Runners panel:
    - command: `npm run server`
-   - port: **5050** (must match the CRA `proxy` in `package.json`)
+   - port: any (5050 by default; Looper may remap it — note the port shown on the card)
    - env: `DATABASE_FILE={{db.ttt-scores.url}}`
 3. **Add the game runner** — command: `npm start` (CRA picks up `PORT` from Looper).
+   - env: `SCORE_API_PORT=<port the API runner actually got>` — the CRA dev
+     proxy (`src/setupProxy.js`) forwards `/api` there. Without it the proxy
+     falls back to 5050, which only works when the API really runs on 5050.
+     A mismatch shows up as `Proxy error: ECONNREFUSED` in the game runner logs.
 4. **Start both**, open the game preview, finish a game (win or draw).
 
 ## What proves it works
 
 - The game sidebar shows **Saved Results (SQLite)** with the finished game.
 - The DBs panel connection now lists a `scores` table with the rows.
-- The API runner’s preview tab (port 5050) has a status page with the resolved
+- The API runner’s preview tab has a status page with the resolved
   DB file path and buttons to insert rows manually — use it to test the DB loop
   without playing.
 - `GET /api/health` returns `{ ok, dbFile, scores }`.
