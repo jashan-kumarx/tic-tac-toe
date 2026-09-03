@@ -1,95 +1,72 @@
 /**
- * Minimal score API to exercise Looper-provisioned databases end to end.
- * One server, two engines, picked by the DATABASE_URL scheme:
- *   mongodb://…     → MongoDB (mongodb driver)
- *   anything else   → SQLite file path (better-sqlite3)
- * Wire DATABASE_URL={{db.<name>.url}} on this runner. DATABASE_FILE is still
- * accepted as an alias so the original sqlite wiring keeps working. The server
- * fails loudly when neither is set so a broken wiring is visible immediately.
+ * Minimal score API to exercise a Looper-provisioned MongoDB database.
+ * The connection string arrives via DATABASE_URL (wire it to {{db.<name>.url}}
+ * in the runner env); the server fails loudly when it's missing so a broken
+ * wiring is visible immediately instead of silently pointing elsewhere.
  */
 const express = require("express");
+const { MongoClient } = require("mongodb");
 
-const dbUrl = process.env.DATABASE_URL || process.env.DATABASE_FILE;
+const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) {
   console.error(
     "[ttt-db] DATABASE_URL is not set — add DATABASE_URL={{db.<name>.url}} to this runner's env."
   );
   process.exit(1);
 }
-
-/** Pick the adapter from the URL scheme. Each exposes init/count/list/insert. */
-function engineFor(url) {
-  if (/^mongodb(\+srv)?:\/\//.test(url)) return "mongodb";
-  return "sqlite";
-}
-const engine = engineFor(dbUrl);
-
-function sqliteAdapter(file) {
-  const Database = require("better-sqlite3");
-  const db = new Database(file);
-  db.pragma("journal_mode = WAL");
-  db.exec(`CREATE TABLE IF NOT EXISTS scores (
-    id        INTEGER PRIMARY KEY AUTOINCREMENT,
-    winner    TEXT NOT NULL,
-    played_at TEXT NOT NULL DEFAULT (datetime('now'))
-  )`);
-  return {
-    init: async () => {},
-    count: async () => db.prepare("SELECT COUNT(*) AS n FROM scores").get().n,
-    list: async () => db.prepare("SELECT * FROM scores ORDER BY id DESC LIMIT 20").all(),
-    insert: async (winner) => db.prepare("INSERT INTO scores (winner) VALUES (?)").run(winner).lastInsertRowid,
-  };
+if (!/^mongodb(\+srv)?:\/\//.test(dbUrl)) {
+  console.error(`[ttt-db] DATABASE_URL must be a mongodb:// url on this branch (got scheme "${dbUrl.split(":")[0]}").`);
+  process.exit(1);
 }
 
-function mongoAdapter(url) {
-  const { MongoClient } = require("mongodb");
-  const client = new MongoClient(url);
-  let col;
-  return {
-    init: async () => {
-      await client.connect();
-      col = client.db().collection("scores");
-      await col.createIndex({ played_at: -1 });
-    },
-    count: async () => col.countDocuments(),
-    list: async () =>
-      (await col.find().sort({ played_at: -1 }).limit(20).toArray()).map((d) => ({
-        id: String(d._id), winner: d.winner, played_at: d.played_at,
-      })),
-    insert: async (winner) =>
-      String((await col.insertOne({ winner, played_at: new Date() })).insertedId),
-  };
+// Password hidden in logs/status page; host+port+db are what matter for wiring checks.
+const dbLabel = dbUrl.replace(/\/\/([^:]+):[^@]+@/, "//$1:***@");
+const client = new MongoClient(dbUrl);
+let scores; // the "scores" collection, set once connected
+
+async function init() {
+  await client.connect();
+  // Looper's managed Mongo url names the app db in its path; db() uses it
+  // (the driver falls back to "test" when a hand-written url has none).
+  scores = client.db().collection("scores");
+  await scores.createIndex({ played_at: -1 });
 }
 
-const db =
-  engine === "mongodb" ? mongoAdapter(dbUrl) : sqliteAdapter(dbUrl);
-
-// Credentials never reach logs or the status page.
-const safeUrl = dbUrl.replace(/\/\/([^@/]+)@/, "//***@");
+// Documents → the same row shape the SQL branches return.
+const toRow = (d) => ({ id: String(d._id), winner: d.winner, played_at: d.played_at });
 
 const app = express();
 app.use(express.json());
 
-// Every handler is async against a network DB now — surface failures as 4xx
-// JSON instead of a hung request.
-const wrap = (fn) => (req, res) =>
-  fn(req, res).catch((err) => res.status(400).json({ error: String(err.message || err) }));
+app.get("/api/health", async (_req, res) => {
+  try {
+    res.json({ ok: true, dbUrl: dbLabel, scores: await scores.countDocuments() });
+  } catch (err) {
+    res.status(503).json({ ok: false, dbUrl: dbLabel, error: String(err.message || err) });
+  }
+});
 
-app.get("/api/health", wrap(async (_req, res) => {
-  res.json({ ok: true, engine, db: safeUrl, scores: await db.count() });
-}));
+app.get("/api/scores", async (_req, res) => {
+  try {
+    const docs = await scores.find().sort({ played_at: -1 }).limit(20).toArray();
+    res.json(docs.map(toRow));
+  } catch (err) {
+    res.status(503).json({ error: String(err.message || err) });
+  }
+});
 
-app.get("/api/scores", wrap(async (_req, res) => {
-  res.json(await db.list());
-}));
-
-app.post("/api/scores", wrap(async (req, res) => {
+app.post("/api/scores", async (req, res) => {
   const winner = String((req.body && req.body.winner) || "");
   if (!["X", "O", "draw"].includes(winner)) {
     return res.status(400).json({ error: "winner must be X, O or draw" });
   }
-  res.json({ id: await db.insert(winner), winner });
-}));
+  try {
+    const { insertedId } = await scores.insertOne({ winner, played_at: new Date() });
+    res.json({ id: String(insertedId), winner });
+  } catch (err) {
+    res.status(503).json({ error: String(err.message || err) });
+  }
+});
 
 // Built-in status page: verifies the whole DB loop without the game UI.
 app.get("/", (_req, res) => {
@@ -99,8 +76,8 @@ app.get("/", (_req, res) => {
 button{margin-right:.5rem;padding:.4rem .8rem;cursor:pointer}
 table{border-collapse:collapse;margin-top:1rem}td,th{border:1px solid #444;padding:.3rem .8rem}</style>
 </head><body data-cmp="tttdb.page_root">
-<h2 data-cmp="tttdb.page_title">${engine} test server</h2>
-<p data-cmp="tttdb.page_dbfile">DB: <b>${safeUrl}</b></p>
+<h2 data-cmp="tttdb.page_title">MongoDB test server</h2>
+<p data-cmp="tttdb.page_dburl">DB: <b>${dbLabel}</b></p>
 <p data-cmp="tttdb.page_actions">
   <button data-cmp="tttdb.addx_btn" onclick="add('X')">Record X win</button>
   <button data-cmp="tttdb.addo_btn" onclick="add('O')">Record O win</button>
@@ -123,11 +100,10 @@ refresh();
 });
 
 const port = Number(process.env.PORT) || 5050;
-db.init()
-  .then(() => app.listen(port, () =>
-    console.log(`[ttt-db] score API on :${port} — engine: ${engine}, db: ${safeUrl}`)))
+init()
+  .then(() => app.listen(port, () => console.log(`[ttt-db] score API on :${port} — db: ${dbLabel}`)))
   .catch((err) => {
     // Fail loudly: an unreachable DB should show in the runner logs, not hang.
-    console.error(`[ttt-db] could not connect to ${engine} at ${safeUrl}: ${err.message || err}`);
+    console.error(`[ttt-db] could not connect to MongoDB at ${dbLabel}: ${err.message || err}`);
     process.exit(1);
   });
