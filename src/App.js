@@ -8,7 +8,7 @@ const App = () => {
     },
   ]);
   const [currentMove, setCurrentMove] = useState(0);
-  // Saved results from the SQLite score API (server/index.js).
+  // Saved results from the PostgreSQL score API (server/index.js).
   const [scores, setScores] = useState([]);
   const [dbError, setDbError] = useState(null);
   const recordedRef = useRef(false);
@@ -91,7 +91,7 @@ const App = () => {
 
   useEffect(refreshScores, [refreshScores]);
 
-  // Record each finished game once into the SQLite score API (best-effort).
+  // Record each finished game once into the PostgreSQL score API (best-effort).
   const gameOver = Boolean(winner) || isDraw;
   useEffect(() => {
     if (!gameOver || recordedRef.current) return;
@@ -148,7 +148,7 @@ const App = () => {
         <div className="game-info">
           <h3>Move History</h3>
           <ol>{moves}</ol>
-          <h3 data-cmp="ttt.scores_title">Saved Results (SQLite)</h3>
+          <h3 data-cmp="ttt.scores_title">Saved Results (PostgreSQL)</h3>
           {dbError ? (
             <p className="db-error" data-cmp="ttt.scores_error">{dbError}</p>
           ) : scores.length === 0 ? (
