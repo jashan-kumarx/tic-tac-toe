@@ -41,13 +41,13 @@ tic-tac-toe/
 1. **Install dependencies:**
 
    ```bash
-   npm install
+   cd client && npm install
    ```
 
 2. **Start the development server:**
 
    ```bash
-   npm start
+   cd client && npm start
    ```
 
 3. **Open your browser:**
