@@ -1,0 +1,14 @@
+{
+  "name": "tic-tac-toe-score-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Score API for the Tic Tac Toe game \u2014 SQLite via a Looper-provisioned DB",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.10.0",
+    "express": "^4.21.2"
+  }
+}
