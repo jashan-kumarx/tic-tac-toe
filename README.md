@@ -20,20 +20,26 @@ A complete, interactive Tic Tac Toe game built with React using functional compo
 
 ```
 tic-tac-toe/
-├── public/
-│   └── index.html          # HTML template
-├── src/
-│   ├── components/
-│   │   ├── Board.js        # Game board component
-│   │   └── Square.js       # Individual square component
-│   ├── App.js              # Main app with game logic
-│   ├── App.css             # Styling
-│   └── index.js            # Entry point
-├── .eslintrc.json          # ESLint configuration
-├── .eslintignore           # ESLint ignore patterns
-├── tsconfig.json           # TypeScript configuration
-├── package.json            # Dependencies and scripts
-└── README.md              # This file
+├── client/                 # CRA game (its own package)
+│   ├── public/
+│   │   └── index.html
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── Board.js    # Game board component
+│   │   │   └── Square.js   # Individual square component
+│   │   ├── App.js          # Main app with game logic
+│   │   ├── App.css         # Styling
+│   │   ├── index.js        # Entry point
+│   │   └── setupProxy.js   # Dev proxy: /api -> score API (BACKEND_URL)
+│   ├── .env.example        # BACKEND_URL wiring for Looper
+│   ├── .eslintrc.json      # ESLint configuration
+│   ├── tsconfig.json       # TypeScript configuration
+│   └── package.json        # Client dependencies and scripts
+├── server/                 # Score API (its own package)
+│   ├── index.js            # Express + pg, reads DATABASE_URL
+│   └── package.json        # Server dependencies
+├── TESTING-DB.md           # How to verify the DB loop in Looper
+└── README.md               # This file
 ```
 
 ## Installation & Setup
@@ -41,13 +47,13 @@ tic-tac-toe/
 1. **Install dependencies:**
 
    ```bash
-   npm install
+   cd client && npm install
    ```
 
 2. **Start the development server:**
 
    ```bash
-   npm start
+   cd client && npm start
    ```
 
 3. **Open your browser:**
