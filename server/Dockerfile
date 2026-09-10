@@ -3,7 +3,7 @@
 # a Dockerfile in a runner's workdir. Doubles as the isolated-runner image:
 # Looper builds this file, then mounts the repo at /workspace and runs the
 # runner's command inside the container.
-FROM node:20-slim
+FROM node:24-slim
 
 # pg needs no build toolchain; curl keeps /api/health debuggable from inside.
 RUN apt-get update \
