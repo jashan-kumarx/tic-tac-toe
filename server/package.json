@@ -2,10 +2,11 @@
   "name": "tic-tac-toe-score-api",
   "version": "1.0.0",
   "private": true,
-  "description": "Score API for the Tic Tac Toe game — PostgreSQL via a Looper-provisioned DB",
+  "description": "Score API for the Tic Tac Toe game \u2014 PostgreSQL via a Looper-provisioned DB",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "node --test tests/dbErrors.test.js"
   },
   "dependencies": {
     "express": "^4.21.2",

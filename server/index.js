@@ -6,6 +6,7 @@
  */
 const express = require("express");
 const { Pool } = require("pg");
+const { isRecoverableDbError } = require("./dbErrors");
 
 const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) {
@@ -19,7 +20,14 @@ if (!dbUrl) {
 const dbLabel = dbUrl.replace(/\/\/([^:]+):[^@]+@/, "//$1:***@");
 const pool = new Pool({ connectionString: dbUrl });
 
-async function init() {
+// A database reset removes the DB container; pooled idle clients then emit
+// 'error'. Unhandled, that event takes the whole API process down.
+pool.on("error", (err) => {
+  console.warn("[ttt-db] idle connection dropped:", err.message || err);
+});
+
+/** Create the scores table when it is absent — safe to call any number of times. */
+async function ensureTable() {
   await pool.query(`CREATE TABLE IF NOT EXISTS scores (
     id        SERIAL PRIMARY KEY,
     winner    TEXT NOT NULL,
@@ -27,12 +35,29 @@ async function init() {
   )`);
 }
 
+/**
+ * Run a query, healing the schema once on a reset-induced failure. Looper's
+ * "Reset" drops this DB's container + volume and recreates them empty, so the
+ * table created at boot disappears under a running API; without this the
+ * endpoints answered 503 forever until someone restarted the runner.
+ */
+async function query(text, params) {
+  try {
+    return await pool.query(text, params);
+  } catch (err) {
+    if (!isRecoverableDbError(err)) throw err;
+    console.warn("[ttt-db] recovering from", err.code || err.message, "— re-creating the scores table");
+    await ensureTable();
+    return pool.query(text, params);
+  }
+}
+
 const app = express();
 app.use(express.json());
 
 app.get("/api/health", async (_req, res) => {
   try {
-    const { rows } = await pool.query("SELECT COUNT(*)::int AS n FROM scores");
+    const { rows } = await query("SELECT COUNT(*)::int AS n FROM scores");
     res.json({ ok: true, dbUrl: dbLabel, scores: rows[0].n });
   } catch (err) {
     res.status(503).json({ ok: false, dbUrl: dbLabel, error: String(err.message || err) });
@@ -41,7 +66,7 @@ app.get("/api/health", async (_req, res) => {
 
 app.get("/api/scores", async (_req, res) => {
   try {
-    const { rows } = await pool.query("SELECT * FROM scores ORDER BY id DESC LIMIT 20");
+    const { rows } = await query("SELECT * FROM scores ORDER BY id DESC LIMIT 20");
     res.json(rows);
   } catch (err) {
     res.status(503).json({ error: String(err.message || err) });
@@ -54,7 +79,7 @@ app.post("/api/scores", async (req, res) => {
     return res.status(400).json({ error: "winner must be X, O or draw" });
   }
   try {
-    const { rows } = await pool.query(
+    const { rows } = await query(
       "INSERT INTO scores (winner) VALUES ($1) RETURNING id",
       [winner]
     );
@@ -82,9 +107,15 @@ table{border-collapse:collapse;margin-top:1rem}td,th{border:1px solid #444;paddi
 <div id="out" data-cmp="tttdb.rows_wrap"></div>
 <script>
 async function refresh(){
-  const rows = await (await fetch('/api/scores')).json();
-  document.getElementById('out').innerHTML = '<table><tr><th>id</th><th>winner</th><th>played_at</th></tr>'
-    + rows.map(r => '<tr><td>'+r.id+'</td><td>'+r.winner+'</td><td>'+r.played_at+'</td></tr>').join('')
+  // The endpoint answers { error } on a DB failure — never assume an array.
+  const body = await (await fetch('/api/scores')).json().catch(() => null);
+  const out = document.getElementById('out');
+  if (!Array.isArray(body)) {
+    out.innerHTML = '<p data-cmp="tttdb.rows_error">' + ((body && body.error) || 'score API error') + '</p>';
+    return;
+  }
+  out.innerHTML = '<table><tr><th>id</th><th>winner</th><th>played_at</th></tr>'
+    + body.map(r => '<tr><td>'+r.id+'</td><td>'+r.winner+'</td><td>'+r.played_at+'</td></tr>').join('')
     + '</table>';
 }
 async function add(winner){
@@ -96,9 +127,10 @@ refresh();
 });
 
 const port = Number(process.env.PORT) || 5050;
-init()
-  .then(() => app.listen(port, () => console.log(`[ttt-db] score API on :${port} — db: ${dbLabel}`)))
-  .catch((err) => {
-    console.error("[ttt-db] could not initialise the scores table:", err.message || err);
-    process.exit(1);
-  });
+// Listen even when the table can't be created yet: a DB that is still booting
+// (or was just reset) must not leave the API in a restart loop with no
+// diagnostics — every query re-creates the table on demand, and /api/health
+// reports the failure meanwhile.
+ensureTable()
+  .catch((err) => console.error("[ttt-db] scores table not ready yet:", err.message || err))
+  .then(() => app.listen(port, () => console.log(`[ttt-db] score API on :${port} — db: ${dbLabel}`)));

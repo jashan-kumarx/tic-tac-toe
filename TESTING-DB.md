@@ -47,5 +47,25 @@ It exists to verify the dev-provisioned databases feature end-to-end.
 - The runner log's first line reads `[ttt-db] score API on :<port> — db: <url>`.
 
 The server exits immediately with a clear error when `DATABASE_URL` is not
-set or the database can't be reached at startup, so a broken `{{db.*.url}}`
-wiring is visible in the runner logs instead of a silent fallback.
+set, so a broken `{{db.*.url}}` wiring is visible in the runner logs instead
+of a silent fallback. A database that is merely unreachable at startup does
+**not** kill the process — it would restart-loop with no diagnostics — the
+API listens anyway and reports the failure on `GET /api/health`.
+
+## Resetting the database
+
+The DBs card's **Reset** removes the Postgres container *and* its volume and
+recreates them, so the running API is left with dead pooled connections and an
+empty database — the `scores` table it created at boot is gone.
+
+The API handles that on its own (`server/dbErrors.js` + the `query()` wrapper
+in `server/index.js`): a reset-shaped failure (`42P01 undefined_table`,
+`3D000`, a dropped connection, …) re-creates the table and retries the query
+once, and a pool-level `error` handler keeps a dropped idle connection from
+taking the process down. The game never renders the error payload as a list
+either — `client/src/lib/scores.mjs` normalizes every reply to an array, so a
+DB outage shows a one-line message in the sidebar and the board stays
+playable.
+
+Verify after a reset: play one game — it should record, and `GET /api/scores`
+should return `[]` then the new row, without restarting the runner.

@@ -30,7 +30,8 @@
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint \"src/**/*.{js,jsx,ts,tsx}\" --fix",
     "type-check": "tsc --noEmit",
-    "verify": "npm run type-check && npm run lint && npm run build"
+    "verify": "npm run type-check && npm run lint && npm run build",
+    "test:lib": "node --test tests/scores.test.mjs"
   },
   "eslintConfig": {
     "extends": [

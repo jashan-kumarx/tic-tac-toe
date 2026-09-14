@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Board from "./components/Board";
+import { parseScores, describeScoreError } from "./lib/scores.mjs";
 
 const App = () => {
   const [history, setHistory] = useState([
@@ -79,14 +80,22 @@ const App = () => {
   const winningLine = winnerInfo?.line;
   const isDraw = !winner && currentSquares.every((square) => square !== null);
 
+  // Never trust the payload's shape: after a database reset the API answers
+  // 503 + { error }, and putting that object in state crashed the game with
+  // "scores.map is not a function" — the board became unplayable.
   const refreshScores = useCallback(() => {
-    fetch("/api/scores")
-      .then((r) => r.json())
-      .then((rows) => {
-        setScores(rows);
-        setDbError(null);
-      })
-      .catch(() => setDbError("score API unreachable — is the db server runner started?"));
+    (async () => {
+      let result;
+      try {
+        const r = await fetch("/api/scores");
+        const body = await r.json().catch(() => null);
+        result = parseScores(r.ok, body);
+      } catch {
+        result = parseScores(false, null);
+      }
+      setScores(result.scores);
+      setDbError(result.error);
+    })();
   }, []);
 
   useEffect(refreshScores, [refreshScores]);
@@ -96,14 +105,30 @@ const App = () => {
   useEffect(() => {
     if (!gameOver || recordedRef.current) return;
     recordedRef.current = true;
-    fetch("/api/scores", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ winner: winner || "draw" }),
-    })
-      .then(refreshScores)
-      .catch(() => setDbError("score API unreachable — is the db server runner started?"));
+    (async () => {
+      try {
+        const r = await fetch("/api/scores", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ winner: winner || "draw" }),
+        });
+        if (!r.ok) {
+          const body = await r.json().catch(() => null);
+          // Let a later finished game retry — the row was never written.
+          recordedRef.current = false;
+          setDbError(describeScoreError(body));
+          return;
+        }
+        refreshScores();
+      } catch {
+        recordedRef.current = false;
+        setDbError(describeScoreError(null));
+      }
+    })();
   }, [gameOver, winner, refreshScores]);
+
+  // Defensive: whatever happens upstream, the render only ever maps an array.
+  const scoreList = Array.isArray(scores) ? scores : [];
 
   let status;
   if (winner) {
@@ -151,11 +176,11 @@ const App = () => {
           <h3 data-cmp="ttt.scores_title">Saved Results (PostgreSQL)</h3>
           {dbError ? (
             <p className="db-error" data-cmp="ttt.scores_error">{dbError}</p>
-          ) : scores.length === 0 ? (
+          ) : scoreList.length === 0 ? (
             <p data-cmp="ttt.scores_empty">No games recorded yet.</p>
           ) : (
             <ol data-cmp="ttt.scores_list">
-              {scores.map((s) => (
+              {scoreList.map((s) => (
                 <li key={s.id}>
                   {s.winner === "draw" ? "Draw" : `${s.winner} won`} — {s.played_at}
                 </li>
