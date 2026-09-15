@@ -10,6 +10,10 @@ end-to-end.
 
 - `client/package.json` — the React app; `npm start` runs the CRA dev server.
 - `server/package.json` — `express` + `better-sqlite3`; `npm start` runs `index.js`.
+- `server/Dockerfile` — the API image (node:24-slim, two stages: better-sqlite3
+  has no prebuilt binary for this node, so it is compiled in a throwaway stage
+  and only the built `node_modules` ships). Looper builds it for isolated/docker
+  runners and publishes; the deps layer is reused until the lockfile changes.
 - no manifest at the root, so Looper detects exactly two services and each
   runner's env-var and database scans see only its own folder.
 
