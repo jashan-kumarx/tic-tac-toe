@@ -46,5 +46,12 @@ end-to-end.
 - `GET /api/health` returns `{ ok, dbFile, scores }`.
 
 The server exits immediately with a clear error when `DATABASE_FILE` is not
-set, so a broken `{{db.*.url}}` wiring is visible in the runner logs instead of
-silently writing to a local file.
+usable, so a broken `{{db.*.url}}` wiring is visible in the runner logs instead
+of silently writing to a local file. It rejects three cases:
+
+- **missing / empty** — nothing wired the variable;
+- **still a template** (contains `{{`) — the `{{db.*.url}}` reference did not
+  resolve, e.g. the session has no such DB connection. SQLite would otherwise
+  create a file literally *named* `{{db.x.url}}` and look perfectly healthy;
+- **a relative path** — it would land wherever the runner's cwd happens to be,
+  which hides a bad wiring behind a working-looking file.

@@ -1,17 +1,46 @@
 /**
  * Minimal score API to exercise a Looper-provisioned SQLite database.
  * The DB file path arrives via DATABASE_FILE (wire it to {{db.<name>.url}}
- * in the runner env); the server fails loudly when it's missing so a broken
- * wiring is visible immediately instead of silently using a local file.
+ * in the runner env); the server fails loudly on anything that isn't a real
+ * resolved path, so a broken wiring is visible immediately instead of
+ * silently using a local file.
  */
+const path = require("path");
 const express = require("express");
 const Database = require("better-sqlite3");
 
-const dbFile = process.env.DATABASE_FILE;
-if (!dbFile) {
-  console.error(
-    "[ttt-db] DATABASE_FILE is not set — add DATABASE_FILE={{db.<name>.url}} to this runner's env."
-  );
+/**
+ * Why more than a null check: better-sqlite3 happily creates whatever filename
+ * it is handed. An unresolved "{{db.x.url}}" template, or a relative path
+ * resolved against an unknown cwd, produces a junk file that *works* — the API
+ * looks healthy while writing nowhere anyone will look.
+ */
+function readDbFile() {
+  const value = process.env.DATABASE_FILE;
+  if (!value || !value.trim()) {
+    return { error: "DATABASE_FILE is not set — add DATABASE_FILE={{db.<name>.url}} to this runner's env." };
+  }
+  const dbFile = value.trim();
+  if (dbFile.includes("{{") || dbFile.includes("}}")) {
+    return {
+      error:
+        `DATABASE_FILE is still a template: ${dbFile}. The {{db.…}} reference did not resolve — ` +
+        "connect or provision that database in the DBs panel, then start again.",
+    };
+  }
+  if (!path.isAbsolute(dbFile)) {
+    return {
+      error:
+        `DATABASE_FILE must be an absolute path, got: ${dbFile}. A relative path lands wherever the ` +
+        "runner's cwd happens to be, which hides a bad wiring behind a working-looking file.",
+    };
+  }
+  return { dbFile };
+}
+
+const { dbFile, error } = readDbFile();
+if (error) {
+  console.error(`[ttt-db] ${error}`);
   process.exit(1);
 }
 
