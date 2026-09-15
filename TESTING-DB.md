@@ -12,6 +12,8 @@ that is not a `mongodb://` url. One branch per engine: `feature/test-db`
 
 - `client/package.json` — the React app; `npm start` runs the CRA dev server.
 - `server/package.json` — `express` + `mongodb`; `npm start` runs `index.js`.
+- `server/Dockerfile` — the API image (node:24-slim, `npm ci` cached in its
+  own layer); Looper builds it for isolated/docker runners and publishes.
 - no manifest at the root, so Looper detects exactly two services and each
   runner's env-var and database scans see only its own folder.
 
