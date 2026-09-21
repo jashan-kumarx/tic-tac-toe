@@ -69,3 +69,25 @@ playable.
 
 Verify after a reset: play one game — it should record, and `GET /api/scores`
 should return `[]` then the new row, without restarting the runner.
+
+## Testing the publish-time migration step
+
+`server/migrate.js` (`npm run migrate`) exists to exercise Looper's per-runner
+**Migration command** — the pipeline runs it once per publish, in a throwaway
+container that mirrors the runner (same image, env and DB wiring), *before* the
+new version starts, and takes a pre-migration DB snapshot automatically.
+
+Wire it: Deployments → **Production** → expand the `tic-tac-toe-score-api` card
+→ **DB** → *Migration command* = `node migrate.js`.
+
+The script creates `scores` (so a fresh DB is usable at boot) and appends one
+row to `migration_marker` per run — that table is the proof the step executed:
+
+```sql
+SELECT * FROM migration_marker ORDER BY id;
+```
+
+One row per publish means the migration ran exactly once each time. To check
+the failure path, set the command to `node -e "process.exit(1)"` and publish:
+the pipeline must stop at `migrate`, never cut over, and leave the previous
+version serving with the snapshot available to restore.
