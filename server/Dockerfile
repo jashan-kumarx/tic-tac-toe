@@ -4,24 +4,12 @@
 # Looper builds this file, then mounts the repo at /workspace and runs the
 # runner's command inside the container.
 #
-# Two stages because better-sqlite3 is a native addon with no prebuilt binary
-# for this node/ABI — it has to be compiled, but the compiler has no business
-# in the image that ships. Same base in both stages so the .node it produces
-# matches the runtime's node and libc.
-FROM node:24-slim AS deps
-
-# node-gyp needs python3 + a C++ toolchain to build better-sqlite3.
-RUN apt-get update \
- && apt-get install -y --no-install-recommends python3 make g++ \
- && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /workspace/server
-
-# Deps first — this layer is reused until package.json / the lockfile change.
-COPY package.json package-lock.json ./
-RUN npm ci --omit=dev
-
-FROM node:24-slim
+# Node 22, not 24, on purpose: better-sqlite3 11.x ships prebuilt binaries only
+# up to Node 23's ABI (v131). On Node 24 npm falls back to compiling from
+# source, which needs python3/make/g++ — and Looper installs a runner's deps
+# inside THIS image, so a slim runtime image fails the publish's deps step.
+# Staying on a prebuilt ABI keeps the image slim and the install fast.
+FROM node:22-slim
 
 # curl keeps /api/health debuggable from inside the container.
 RUN apt-get update \
@@ -30,8 +18,13 @@ RUN apt-get update \
 
 WORKDIR /workspace/server
 
-COPY --from=deps /workspace/server/node_modules ./node_modules
-COPY package.json package-lock.json index.js ./
+# Deps first — this layer is reused until package.json / the lockfile change.
+# Looper mounts its own node_modules volume over this at run time; baking them
+# in keeps the image runnable on its own (docker run) too.
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+
+COPY index.js ./
 
 # DATABASE_FILE is injected per runner ({{db.<name>.url}}); Looper sets PORT.
 ENV NODE_ENV=production \
