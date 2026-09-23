@@ -30,10 +30,13 @@ It exists to verify the dev-provisioned databases feature end-to-end.
    template key is the API runner's name, lowercased with non-alphanumerics as
    dashes; adjust it if you renamed the runner. A bare port or `host:port`
    is accepted too (the proxy adds `http://localhost:` itself).
-     Without it the proxy falls back to `http://localhost:5050`, which only works
-     when the API really runs on 5050. A mismatch shows up as
+     Without it the proxy falls back to the local-machine default (port 5050),
+     which only works when the API really runs there. A mismatch shows up as
      `Proxy error: ECONNREFUSED` in the game runner logs, and the game shows
-     "score API unreachable".
+     "score API unreachable"; the proxy also logs the fallback at boot.
+     **Published apps need no wiring:** Looper injects `LOOPER_BACKEND_URL`
+     (the API runner's port on the shared pod loopback) into the frontend
+     runner, and the proxy reads it when `BACKEND_URL` is unset.
 4. **Start both**, open the game preview, finish a game (win or draw).
 
 ## What proves it works
