@@ -1,0 +1,65 @@
+{
+  "id": "0395172c-9b84-438f-b88c-c41764a61036",
+  "name": "Test \u00b7 05 HTTP",
+  "description": "Node test #5 \u2014 HTTP. Webhook \u2192 HTTP GET https://example.com?format=json (waits for the response) \u2192 Output shows status + body. The body is the caller's public IP, so local shows your Mac's IP and production shows the EC2 host's IP.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-htp-05",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "htp-htp-05",
+        "kind": "http",
+        "name": "call",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "method": "GET",
+          "url": "https://example.com?format=json",
+          "onError": "fail"
+        }
+      },
+      {
+        "id": "out-htp-05",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "HTTP status={{nodes.call.status}} body={{nodes.call.text}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-htp",
+        "source": "trg-htp-05",
+        "target": "htp-htp-05"
+      },
+      {
+        "id": "e-htp-out",
+        "source": "htp-htp-05",
+        "target": "out-htp-05"
+      }
+    ]
+  },
+  "createdAt": 1790249967060,
+  "updatedAt": 1790249967060
+}

@@ -1,0 +1,50 @@
+{
+  "id": "a6000026-0000-4000-8000-000000000026",
+  "name": "Test \u00b7 26 Gmail new-email trigger",
+  "description": "Armed-trigger test. Fires when a new email arrives in the bound Gmail inbox (polling, ~60 s) \u2192 Output with the email snippet. Proves a published app arms and fires a connector trigger.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-gmnew-26",
+        "kind": "trigger",
+        "name": "new-email",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "connector",
+          "connectionId": "4a9bbd9b-ae97-4c65-9f75-c8bfc9206f2d",
+          "event": "gmail_new_email_received"
+        }
+      },
+      {
+        "id": "out-gmnew-26",
+        "kind": "output",
+        "name": "reply-new-email",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "channel": "chat",
+          "body": "New email \ud83d\udcec id {{trigger.payload.id}} \u00b7 {{trigger.payload.snippet}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-gmnew-26-1",
+        "source": "trg-gmnew-26",
+        "target": "out-gmnew-26"
+      }
+    ],
+    "maxConcurrency": 4,
+    "capabilities": []
+  },
+  "createdAt": 1790589510509,
+  "updatedAt": 1790589510509
+}

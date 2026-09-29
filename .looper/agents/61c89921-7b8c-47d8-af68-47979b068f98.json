@@ -1,0 +1,85 @@
+{
+  "id": "61c89921-7b8c-47d8-af68-47979b068f98",
+  "name": "Test \u00b7 07 Branch",
+  "description": "Node test #7 \u2014 Branch (condition). Webhook \u2192 Branch on {{trigger.answer}} equals 'yes' \u2192 YES reply or NO reply. Only one output should run; the other is skipped.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-brn-07",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 240,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "cnd-brn-07",
+        "kind": "condition",
+        "name": "check",
+        "position": {
+          "x": 240,
+          "y": 220
+        },
+        "config": {
+          "variable": "{{trigger.answer}}",
+          "operator": "equals",
+          "value": "yes"
+        }
+      },
+      {
+        "id": "out-brn-yes",
+        "kind": "output",
+        "name": "reply-yes",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Branch took YES (answer={{trigger.answer}})"
+        }
+      },
+      {
+        "id": "out-brn-no",
+        "kind": "output",
+        "name": "reply-no",
+        "position": {
+          "x": 400,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Branch took NO (answer={{trigger.answer}})"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-cnd",
+        "source": "trg-brn-07",
+        "target": "cnd-brn-07"
+      },
+      {
+        "id": "e-cnd-yes",
+        "source": "cnd-brn-07",
+        "target": "out-brn-yes",
+        "sourceHandle": "yes"
+      },
+      {
+        "id": "e-cnd-no",
+        "source": "cnd-brn-07",
+        "target": "out-brn-no",
+        "sourceHandle": "no"
+      }
+    ]
+  },
+  "createdAt": 1790251219048,
+  "updatedAt": 1790251219048
+}

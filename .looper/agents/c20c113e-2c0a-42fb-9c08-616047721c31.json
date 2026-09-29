@@ -1,0 +1,71 @@
+{
+  "id": "c20c113e-2c0a-42fb-9c08-616047721c31",
+  "name": "Test \u00b7 18 Replay",
+  "description": "Node test #18 \u2014 Replay. Webhook \u2192 a replay node with one harmless recorded step (a host-screen screenshot, verify none) \u2192 output. Expected: runs locally only with Host Agent on; publishing should be blocked (no host screen in the cloud).",
+  "enabled": true,
+  "folderId": null,
+  "createdAt": 1790314767945,
+  "updatedAt": 1790314767945,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-rep-18",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "rep-rep-18",
+        "kind": "replay",
+        "name": "replay",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "steps": [
+            {
+              "type": "screenshot",
+              "note": "harmless: just capture the screen"
+            }
+          ],
+          "subGoal": "",
+          "verify": "none",
+          "onVerifyFail": "fail"
+        }
+      },
+      {
+        "id": "out-rep-18",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Replay log: {{nodes.replay.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-rep",
+        "source": "trg-rep-18",
+        "target": "rep-rep-18"
+      },
+      {
+        "id": "e-rep-out",
+        "source": "rep-rep-18",
+        "target": "out-rep-18"
+      }
+    ]
+  }
+}

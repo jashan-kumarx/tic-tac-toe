@@ -1,0 +1,107 @@
+{
+  "id": "ad20ee8f-32e1-4736-a45d-d9d24ea468e1",
+  "name": "Test \u00b7 08 Switch",
+  "description": "Node test #8 \u2014 Switch. Webhook \u2192 Switch on {{trigger.priority}} with cases urgent / normal, plus default \u2192 one reply per route. Only the matched route runs; the others are skipped.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-swt-08",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 320,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "swt-swt-08",
+        "kind": "switch",
+        "name": "route",
+        "position": {
+          "x": 320,
+          "y": 220
+        },
+        "config": {
+          "value": "{{trigger.priority}}",
+          "cases": [
+            "urgent",
+            "normal"
+          ],
+          "caseSensitive": false
+        }
+      },
+      {
+        "id": "out-swt-urg",
+        "kind": "output",
+        "name": "reply-urgent",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Switch routed to URGENT (priority={{trigger.priority}})"
+        }
+      },
+      {
+        "id": "out-swt-nrm",
+        "kind": "output",
+        "name": "reply-normal",
+        "position": {
+          "x": 320,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Switch routed to NORMAL (priority={{trigger.priority}})"
+        }
+      },
+      {
+        "id": "out-swt-def",
+        "kind": "output",
+        "name": "reply-default",
+        "position": {
+          "x": 560,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Switch routed to DEFAULT (priority={{trigger.priority}})"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-swt",
+        "source": "trg-swt-08",
+        "target": "swt-swt-08"
+      },
+      {
+        "id": "e-swt-urg",
+        "source": "swt-swt-08",
+        "target": "out-swt-urg",
+        "sourceHandle": "case-urgent"
+      },
+      {
+        "id": "e-swt-nrm",
+        "source": "swt-swt-08",
+        "target": "out-swt-nrm",
+        "sourceHandle": "case-normal"
+      },
+      {
+        "id": "e-swt-def",
+        "source": "swt-swt-08",
+        "target": "out-swt-def",
+        "sourceHandle": "default"
+      }
+    ]
+  },
+  "createdAt": 1790252377387,
+  "updatedAt": 1790307349836
+}

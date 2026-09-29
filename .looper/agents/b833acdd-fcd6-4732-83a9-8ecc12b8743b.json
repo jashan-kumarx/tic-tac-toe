@@ -1,0 +1,95 @@
+{
+  "id": "b833acdd-fcd6-4732-83a9-8ecc12b8743b",
+  "name": "Test \u00b7 21 Two code hooks (A5)",
+  "description": "A5 test \u2014 two code-hook triggers on one agent. hook-a \u2192 'Branch A ran (from: {{input.from}})', hook-b \u2192 'Branch B ran (from: {{input.from}})'. Calling one hook must run only its own branch. Header auth is OFF.",
+  "enabled": true,
+  "folderId": null,
+  "createdAt": 1790397174268,
+  "updatedAt": 1790397174268,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "hook-a",
+        "kind": "trigger",
+        "name": "code-hook-a",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "code_hook",
+          "auth": {
+            "headerName": "X-Looper-Agent-Token",
+            "enabled": false,
+            "inputKey": "agent_token"
+          }
+        }
+      },
+      {
+        "id": "hook-b",
+        "kind": "trigger",
+        "name": "code-hook-b",
+        "position": {
+          "x": 400,
+          "y": 60
+        },
+        "config": {
+          "type": "code_hook",
+          "auth": {
+            "headerName": "X-Looper-Agent-Token",
+            "enabled": false,
+            "inputKey": "agent_token"
+          }
+        }
+      },
+      {
+        "id": "out-a",
+        "kind": "output",
+        "name": "reply-a",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Branch A ran (from: {{input.from}})"
+        }
+      },
+      {
+        "id": "out-b",
+        "kind": "output",
+        "name": "reply-b",
+        "position": {
+          "x": 400,
+          "y": 220
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Branch B ran (from: {{input.from}})"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-a",
+        "source": "hook-a",
+        "target": "out-a"
+      },
+      {
+        "id": "e-b",
+        "source": "hook-b",
+        "target": "out-b"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "in-from",
+        "key": "from",
+        "label": "From",
+        "kind": "runtime",
+        "required": false
+      }
+    ]
+  }
+}

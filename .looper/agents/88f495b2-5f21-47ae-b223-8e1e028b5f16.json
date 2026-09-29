@@ -1,0 +1,101 @@
+{
+  "id": "88f495b2-5f21-47ae-b223-8e1e028b5f16",
+  "name": "Test \u00b7 06 Delay",
+  "description": "Node test #6 \u2014 Delay. Webhook \u2192 bash stamps the time \u2192 Delay 10 seconds \u2192 bash stamps the time again \u2192 Output shows both. The two stamps should be ~10 s apart.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-dly-06",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "cod-before-06",
+        "kind": "code",
+        "name": "before",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "language": "bash",
+          "source": "date -u +%H:%M:%S"
+        }
+      },
+      {
+        "id": "dly-dly-06",
+        "kind": "delay",
+        "name": "wait",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "mode": "duration",
+          "value": 10,
+          "unit": "seconds"
+        }
+      },
+      {
+        "id": "cod-after-06",
+        "kind": "code",
+        "name": "after",
+        "position": {
+          "x": 80,
+          "y": 540
+        },
+        "config": {
+          "language": "bash",
+          "source": "date -u +%H:%M:%S"
+        }
+      },
+      {
+        "id": "out-dly-06",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 80,
+          "y": 700
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Delay test: before={{nodes.before.output}} after={{nodes.after.output}} (expect ~10s apart, UTC)"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-bef",
+        "source": "trg-dly-06",
+        "target": "cod-before-06"
+      },
+      {
+        "id": "e-bef-dly",
+        "source": "cod-before-06",
+        "target": "dly-dly-06"
+      },
+      {
+        "id": "e-dly-aft",
+        "source": "dly-dly-06",
+        "target": "cod-after-06"
+      },
+      {
+        "id": "e-aft-out",
+        "source": "cod-after-06",
+        "target": "out-dly-06"
+      }
+    ]
+  },
+  "createdAt": 1790250774162,
+  "updatedAt": 1790250774162
+}

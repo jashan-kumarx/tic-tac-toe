@@ -1,0 +1,46 @@
+{
+  "id": "665b05f5-4115-4607-9505-2fd60187d311",
+  "name": "Test \u00b7 02 Output",
+  "description": "Node test #2 \u2014 Output. Webhook \u2192 Output (chat channel). The run should succeed and its final output should echo the trigger body.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-out-02",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "out-out-02",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Output node says: got {{trigger.message}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-out",
+        "source": "trg-out-02",
+        "target": "out-out-02"
+      }
+    ]
+  },
+  "createdAt": 1790247338546,
+  "updatedAt": 1790247338546
+}

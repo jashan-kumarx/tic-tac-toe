@@ -1,0 +1,5 @@
+{
+  "listeners": [
+    { "id": "tic-tac-toe.mugwx7mf20plsc", "repoName": "tic-tac-toe", "filePath": "client/src/App.js", "line": 22, "label": "App.js — agent banner", "createdAt": 1790337870506 }
+  ]
+}

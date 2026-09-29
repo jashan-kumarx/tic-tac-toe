@@ -1,0 +1,92 @@
+{
+  "id": "a6000027-0000-4000-8000-000000000027",
+  "name": "Test \u00b7 27 Approval",
+  "description": "Human-in-the-loop test. Manual trigger \u2192 Approval \u2192 Approved/Rejected outputs. Run it, approve or reject, and the matching output should fire.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-appr-27",
+        "kind": "trigger",
+        "name": "manual-start",
+        "position": {
+          "x": 240,
+          "y": 60
+        },
+        "config": {
+          "type": "manual"
+        }
+      },
+      {
+        "id": "apr-appr-27",
+        "kind": "approval",
+        "name": "ask-approval",
+        "position": {
+          "x": 240,
+          "y": 220
+        },
+        "config": {
+          "message": "Approve sending the report?",
+          "channel": "looper",
+          "waitMode": "timeout",
+          "timeoutValue": 10,
+          "timeoutUnit": "minutes",
+          "timeoutAction": "reject",
+          "approveLabel": "Approve",
+          "rejectLabel": "Reject"
+        }
+      },
+      {
+        "id": "out-appr-yes",
+        "kind": "output",
+        "name": "approved",
+        "position": {
+          "x": 80,
+          "y": 400
+        },
+        "config": {
+          "channel": "chat",
+          "body": "APPROVED \u2014 the report would be sent now."
+        }
+      },
+      {
+        "id": "out-appr-no",
+        "kind": "output",
+        "name": "rejected",
+        "position": {
+          "x": 400,
+          "y": 400
+        },
+        "config": {
+          "channel": "chat",
+          "body": "REJECTED \u2014 nothing was sent."
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-apr",
+        "source": "trg-appr-27",
+        "target": "apr-appr-27"
+      },
+      {
+        "id": "e-apr-yes",
+        "source": "apr-appr-27",
+        "sourceHandle": "approved",
+        "target": "out-appr-yes",
+        "label": "approved"
+      },
+      {
+        "id": "e-apr-no",
+        "source": "apr-appr-27",
+        "sourceHandle": "rejected",
+        "target": "out-appr-no",
+        "label": "rejected"
+      }
+    ]
+  },
+  "createdAt": 1790679449603,
+  "updatedAt": 1790679449603
+}

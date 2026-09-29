@@ -1,0 +1,82 @@
+{
+  "id": "f7d1f014-a180-4fbb-bbcc-bc430a57bd51",
+  "name": "Test \u00b7 04 Code",
+  "description": "Node test #4 \u2014 Code (both languages). Webhook body {\"name\":\"Ada\"} \u2192 bash step echoes the name + OS \u2192 JS step reads the raw body from scope and returns upper-cased JSON \u2192 Output combines both.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-cod-04",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "cod-bash-04",
+        "kind": "code",
+        "name": "bash-step",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "language": "bash",
+          "source": "echo \"bash says hi {{trigger.name}} on $(uname -s)\""
+        }
+      },
+      {
+        "id": "cod-js-04",
+        "kind": "code",
+        "name": "js-step",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "language": "js",
+          "source": "let b = {}; try { b = JSON.parse(scope.trigger.input || '{}'); } catch (e) { b = { name: scope.trigger.input }; } const name = String(b.name || 'nobody'); return JSON.stringify({ upper: name.toUpperCase(), len: name.length });"
+        }
+      },
+      {
+        "id": "out-cod-04",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 80,
+          "y": 540
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Bash: {{nodes.bash-step.output}} | JS: upper={{nodes.js-step.upper}} len={{nodes.js-step.len}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-bash",
+        "source": "trg-cod-04",
+        "target": "cod-bash-04"
+      },
+      {
+        "id": "e-bash-js",
+        "source": "cod-bash-04",
+        "target": "cod-js-04"
+      },
+      {
+        "id": "e-js-out",
+        "source": "cod-js-04",
+        "target": "out-cod-04"
+      }
+    ]
+  },
+  "createdAt": 1790248786375,
+  "updatedAt": 1790249210576
+}

@@ -1,0 +1,126 @@
+{
+  "id": "613f7096-61fe-4216-9773-c0a0571009e3",
+  "name": "Test \u00b7 11 Retry",
+  "description": "Node test #11 \u2014 Retry. Webhook \u2192 Transform 'attempt' \u2192 Branch on {{trigger.ok}} == yes. YES \u2192 success reply. NO \u2192 Retry (max 2) sends the flow back to 'attempt'; after 2 retries it takes the exhausted route \u2192 give-up reply.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-rty-11",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 240,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "trf-rty-11",
+        "kind": "transform",
+        "name": "attempt",
+        "position": {
+          "x": 240,
+          "y": 220
+        },
+        "config": {
+          "template": "attempt with ok={{trigger.ok}}"
+        }
+      },
+      {
+        "id": "cnd-rty-11",
+        "kind": "condition",
+        "name": "check",
+        "position": {
+          "x": 240,
+          "y": 380
+        },
+        "config": {
+          "variable": "{{trigger.ok}}",
+          "operator": "equals",
+          "value": "yes"
+        }
+      },
+      {
+        "id": "out-rty-ok",
+        "kind": "output",
+        "name": "reply-ok",
+        "position": {
+          "x": 80,
+          "y": 540
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Retry test: passed first time (ok={{trigger.ok}})"
+        }
+      },
+      {
+        "id": "rty-rty-11",
+        "kind": "retry",
+        "name": "again",
+        "position": {
+          "x": 400,
+          "y": 540
+        },
+        "config": {
+          "maxCount": 2
+        }
+      },
+      {
+        "id": "out-rty-ex",
+        "kind": "output",
+        "name": "reply-gave-up",
+        "position": {
+          "x": 240,
+          "y": 700
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Retry exhausted: {{nodes.again.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-att",
+        "source": "trg-rty-11",
+        "target": "trf-rty-11"
+      },
+      {
+        "id": "e-att-cnd",
+        "source": "trf-rty-11",
+        "target": "cnd-rty-11"
+      },
+      {
+        "id": "e-cnd-yes",
+        "source": "cnd-rty-11",
+        "target": "out-rty-ok",
+        "sourceHandle": "yes"
+      },
+      {
+        "id": "e-cnd-no",
+        "source": "cnd-rty-11",
+        "target": "rty-rty-11",
+        "sourceHandle": "no"
+      },
+      {
+        "id": "e-rty-back",
+        "source": "rty-rty-11",
+        "target": "trf-rty-11",
+        "sourceHandle": "back"
+      },
+      {
+        "id": "e-rty-ex",
+        "source": "rty-rty-11",
+        "target": "out-rty-ex",
+        "sourceHandle": "exhausted"
+      }
+    ]
+  },
+  "createdAt": 1790309843105,
+  "updatedAt": 1790309913749
+}

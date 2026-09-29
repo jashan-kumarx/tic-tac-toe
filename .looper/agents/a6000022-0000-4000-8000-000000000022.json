@@ -1,0 +1,157 @@
+{
+  "id": "a6000022-0000-4000-8000-000000000022",
+  "name": "Test \u00b7 22 Ingress options (A6)",
+  "description": "A6 local test. hook-auth: header auth (X-Looper-Agent-Token). hook-headers: reads x-test-header. hook-schema: amount must be a number 1\u2013100.",
+  "enabled": true,
+  "folderId": null,
+  "createdAt": 1790399124206,
+  "updatedAt": 1790399812302,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "hook-auth",
+        "kind": "trigger",
+        "name": "code-hook-auth",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "code_hook",
+          "auth": {
+            "headerName": "X-Looper-Agent-Token",
+            "enabled": true,
+            "inputKey": "agent_token"
+          }
+        }
+      },
+      {
+        "id": "hook-headers",
+        "kind": "trigger",
+        "name": "code-hook-headers",
+        "position": {
+          "x": 400,
+          "y": 60
+        },
+        "config": {
+          "type": "code_hook",
+          "auth": {
+            "headerName": "X-Looper-Agent-Token",
+            "enabled": false,
+            "inputKey": "agent_token"
+          },
+          "captureHeaders": {
+            "enabled": true,
+            "mode": "selected",
+            "allow": [
+              "x-test-header"
+            ]
+          }
+        }
+      },
+      {
+        "id": "hook-schema",
+        "kind": "trigger",
+        "name": "code-hook-schema",
+        "position": {
+          "x": 720,
+          "y": 60
+        },
+        "config": {
+          "type": "code_hook",
+          "auth": {
+            "headerName": "X-Looper-Agent-Token",
+            "enabled": false,
+            "inputKey": "agent_token"
+          },
+          "payloadSchema": {
+            "enabled": true,
+            "fields": [
+              {
+                "path": "amount",
+                "type": "number",
+                "required": true,
+                "min": 1,
+                "max": 100
+              }
+            ]
+          }
+        }
+      },
+      {
+        "id": "out-auth",
+        "kind": "output",
+        "name": "reply-auth",
+        "position": {
+          "x": 80,
+          "y": 240
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Auth passed \u2705"
+        }
+      },
+      {
+        "id": "out-headers",
+        "kind": "output",
+        "name": "reply-headers",
+        "position": {
+          "x": 400,
+          "y": 240
+        },
+        "config": {
+          "channel": "chat",
+          "body": "x-test-header = {{trigger.headers.x-test-header}}"
+        }
+      },
+      {
+        "id": "out-schema",
+        "kind": "output",
+        "name": "reply-schema",
+        "position": {
+          "x": 720,
+          "y": 240
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Schema passed \u2705 amount = {{input.amount}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "source": "hook-auth",
+        "target": "out-auth"
+      },
+      {
+        "id": "e2",
+        "source": "hook-headers",
+        "target": "out-headers"
+      },
+      {
+        "id": "e3",
+        "source": "hook-schema",
+        "target": "out-schema"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "trigger-auth-a6in",
+        "key": "agent_token",
+        "label": "Agent token",
+        "kind": "secret",
+        "secretRef": "trigger-auth-a6ref",
+        "required": false
+      },
+      {
+        "id": "in-amount",
+        "key": "amount",
+        "label": "Amount",
+        "kind": "runtime",
+        "required": false
+      }
+    ]
+  }
+}

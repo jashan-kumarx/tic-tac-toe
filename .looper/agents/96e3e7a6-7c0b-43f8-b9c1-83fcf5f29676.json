@@ -1,0 +1,65 @@
+{
+  "id": "96e3e7a6-7c0b-43f8-b9c1-83fcf5f29676",
+  "name": "Test \u00b7 12 LLM",
+  "description": "Node test #12 \u2014 LLM step. Webhook \u2192 LLM step (Claude Haiku 4.5, direct provider call, no tools) replies to {{trigger.message}} in at most 5 words \u2192 Output.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-llm-12",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 320,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "llm-llm-12",
+        "kind": "llm",
+        "name": "ask",
+        "position": {
+          "x": 320,
+          "y": 220
+        },
+        "config": {
+          "systemPrompt": "",
+          "prompt": "Reply to this message in at most 5 words, nothing else: {{trigger.message}}",
+          "model": "claude-haiku-4-5-20251001"
+        }
+      },
+      {
+        "id": "out-llm-12",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 320,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "LLM said: {{nodes.ask.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-llm",
+        "source": "trg-llm-12",
+        "target": "llm-llm-12"
+      },
+      {
+        "id": "e-llm-out",
+        "source": "llm-llm-12",
+        "target": "out-llm-12"
+      }
+    ]
+  },
+  "createdAt": 1790310224398,
+  "updatedAt": 1790310224398
+}

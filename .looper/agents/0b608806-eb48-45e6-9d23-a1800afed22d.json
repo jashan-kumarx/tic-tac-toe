@@ -1,0 +1,47 @@
+{
+  "id": "0b608806-eb48-45e6-9d23-a1800afed22d",
+  "name": "Test \u00b7 01 End",
+  "description": "Node test #1 \u2014 End. Webhook \u2192 End (graceful, exitStatus succeeded). The run should finish as succeeded with the summary echoing the trigger body.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-end-01",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "end-end-01",
+        "kind": "end",
+        "name": "finish",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "mode": "graceful",
+          "exitStatus": "succeeded",
+          "summary": "End node reached. Trigger body: {{trigger.message}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-end",
+        "source": "trg-end-01",
+        "target": "end-end-01"
+      }
+    ]
+  },
+  "createdAt": 1790246332577,
+  "updatedAt": 1790332128038
+}

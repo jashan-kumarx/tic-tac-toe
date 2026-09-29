@@ -1,0 +1,50 @@
+{
+  "id": "f23625ea-ede4-404f-a3ea-cf6a67310252",
+  "name": "Test \u00b7 20 Code listener",
+  "description": "Code listener test. Webhook \u2192 Output (code listener). Pushes {{trigger.text}} (send {\"text\":\"hi\"}) into the tic-tac-toe app's listener tic-tac-toe.mugwx7mf20plsc; the app shows 'Agent says: \u2026' under the title and logs it to the console.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-cl-20",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "out-cl-20",
+        "kind": "output",
+        "name": "push-to-app",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "channel": "code",
+          "hookIds": [
+            "tic-tac-toe.mugwx7mf20plsc"
+          ],
+          "requireListener": false,
+          "body": "{{trigger.text}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-cl",
+        "source": "trg-cl-20",
+        "target": "out-cl-20"
+      }
+    ]
+  },
+  "createdAt": 1790337870506,
+  "updatedAt": 1790339054089
+}

@@ -1,0 +1,60 @@
+{
+  "id": "a6000023-0000-4000-8000-000000000023",
+  "name": "Test \u00b7 23 Required input (A6)",
+  "description": "A6 local test. Runtime input 'customer' is required \u2014 calling without it must return 400.",
+  "enabled": true,
+  "folderId": null,
+  "createdAt": 1790399124206,
+  "updatedAt": 1790399124206,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "hook-required",
+        "kind": "trigger",
+        "name": "code-hook-required",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "code_hook",
+          "auth": {
+            "headerName": "X-Looper-Agent-Token",
+            "enabled": false,
+            "inputKey": "agent_token"
+          }
+        }
+      },
+      {
+        "id": "out-required",
+        "kind": "output",
+        "name": "reply-required",
+        "position": {
+          "x": 80,
+          "y": 240
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Hello {{input.customer}} \u2705"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "source": "hook-required",
+        "target": "out-required"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "in-customer",
+        "key": "customer",
+        "label": "Customer",
+        "kind": "runtime",
+        "required": true
+      }
+    ]
+  }
+}

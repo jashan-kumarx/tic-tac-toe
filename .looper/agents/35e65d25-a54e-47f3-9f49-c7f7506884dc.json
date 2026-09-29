@@ -1,0 +1,71 @@
+{
+  "id": "35e65d25-a54e-47f3-9f49-c7f7506884dc",
+  "name": "Test \u00b7 15 Orchestrator",
+  "description": "Node test #15 \u2014 Orchestrator. Webhook body is passed to an orchestrator (auto mode, Haiku 4.5) that picks between 'Test \u00b7 03 Transform' (greeting from name + city) and 'Test \u00b7 12 LLM' (short answer to a question), runs the chosen agent(s) and merges their outputs by agent name.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-orc-15",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "orc-orc-15",
+        "kind": "orchestrator",
+        "name": "pick",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "instructions": "{{trigger.input}}",
+          "agentIds": [
+            "2b03b54d-0c40-47c7-a73f-0dfd53bca75a",
+            "96e3e7a6-7c0b-43f8-b9c1-83fcf5f29676"
+          ],
+          "mode": "auto",
+          "model": "claude-haiku-4-5-20251001",
+          "merge": "object",
+          "memory": "episodic"
+        }
+      },
+      {
+        "id": "out-orc-15",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Orchestrator result: {{nodes.pick.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-orc",
+        "source": "trg-orc-15",
+        "target": "orc-orc-15"
+      },
+      {
+        "id": "e-orc-out",
+        "source": "orc-orc-15",
+        "target": "out-orc-15"
+      }
+    ]
+  },
+  "createdAt": 1790312486035,
+  "updatedAt": 1790312486035
+}

@@ -1,0 +1,66 @@
+{
+  "id": "c9d874e8-97a1-4e41-ae86-a4d94f8224f4",
+  "name": "Test \u00b7 13 AI agent",
+  "description": "Node test #13 \u2014 AI agent. Webhook \u2192 AI agent (Looper harness, Claude Haiku 4.5, no tools) answers {{trigger.message}} in one short sentence \u2192 Output.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-agt-13",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 320,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "agt-agt-13",
+        "kind": "ai",
+        "name": "think",
+        "position": {
+          "x": 320,
+          "y": 220
+        },
+        "config": {
+          "instructions": "Answer this in one short sentence (max 12 words), nothing else: {{trigger.message}}",
+          "harness": "looper",
+          "model": "claude-haiku-4-5-20251001",
+          "tools": []
+        }
+      },
+      {
+        "id": "out-agt-13",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 320,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "AI agent said: {{nodes.think.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-agt",
+        "source": "trg-agt-13",
+        "target": "agt-agt-13"
+      },
+      {
+        "id": "e-agt-out",
+        "source": "agt-agt-13",
+        "target": "out-agt-13"
+      }
+    ]
+  },
+  "createdAt": 1790310825666,
+  "updatedAt": 1790310825666
+}

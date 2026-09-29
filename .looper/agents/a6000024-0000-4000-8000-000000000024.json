@@ -1,0 +1,70 @@
+{
+  "id": "a6000024-0000-4000-8000-000000000024",
+  "name": "Test \u00b7 24 Gmail connector",
+  "description": "Gmail connector test. Webhook \u2192 Gmail get profile \u2192 Output. Proves a published app can call Gmail through its bound connection.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-gm-24",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "con-gm-24",
+        "kind": "connector",
+        "name": "gmail-profile",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "connectorId": "mcp",
+          "action": "call",
+          "params": {
+            "tool": "gmail__gmail_get_profile",
+            "params": {}
+          }
+        }
+      },
+      {
+        "id": "out-gm-24",
+        "kind": "output",
+        "name": "reply-gmail",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Gmail OK \u2705 {{nodes.gmail-profile.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-gm-24-1",
+        "source": "trg-gm-24",
+        "target": "con-gm-24"
+      },
+      {
+        "id": "e-gm-24-2",
+        "source": "con-gm-24",
+        "target": "out-gm-24"
+      }
+    ],
+    "maxConcurrency": 4,
+    "capabilities": []
+  },
+  "createdAt": 1790585829168,
+  "updatedAt": 1790585829168
+}

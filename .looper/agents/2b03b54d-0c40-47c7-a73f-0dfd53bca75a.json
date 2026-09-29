@@ -1,0 +1,63 @@
+{
+  "id": "2b03b54d-0c40-47c7-a73f-0dfd53bca75a",
+  "name": "Test \u00b7 03 Transform",
+  "description": "Node test #3 \u2014 Transform. Webhook body {\"name\":\"Ada\",\"city\":\"Paris\"} \u2192 Transform builds a JSON object from the body fields \u2192 Output reads the Transform's fields back. Proves template rendering, trigger field lookup and node-field parsing.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-trf-03",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "trf-trf-03",
+        "kind": "transform",
+        "name": "shape",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "template": "{\"greeting\":\"Hello {{trigger.name}}\",\"from\":\"{{trigger.city}}\"}"
+        }
+      },
+      {
+        "id": "out-trf-03",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Transform result: {{nodes.shape.greeting}} from {{nodes.shape.from}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-trf",
+        "source": "trg-trf-03",
+        "target": "trf-trf-03"
+      },
+      {
+        "id": "e-trf-out",
+        "source": "trf-trf-03",
+        "target": "out-trf-03"
+      }
+    ]
+  },
+  "createdAt": 1790248011436,
+  "updatedAt": 1790248011436
+}

@@ -1,0 +1,74 @@
+{
+  "id": "a6000025-0000-4000-8000-000000000025",
+  "name": "Test \u00b7 25 HTTP connector",
+  "description": "HTTP connector test. Webhook \u2192 POST the webhook body to the echo endpoint \u2192 Output. Proves a published app can make outbound HTTP calls with no connection binding.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-http-25",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "con-http-25",
+        "kind": "connector",
+        "name": "http-echo",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "connectorId": "http",
+          "action": "request",
+          "params": {
+            "method": "POST",
+            "url": "https://example.com/echo",
+            "headers": {
+              "Content-Type": "application/json"
+            },
+            "body": "{{trigger.input}}"
+          }
+        }
+      },
+      {
+        "id": "out-http-25",
+        "kind": "output",
+        "name": "reply-http",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "HTTP OK \u2705 the echo endpoint answered {{nodes.http-echo.status}} \u00b7 you sent {{trigger.input}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-http-25-1",
+        "source": "trg-http-25",
+        "target": "con-http-25"
+      },
+      {
+        "id": "e-http-25-2",
+        "source": "con-http-25",
+        "target": "out-http-25"
+      }
+    ],
+    "maxConcurrency": 4,
+    "capabilities": []
+  },
+  "createdAt": 1790588107994,
+  "updatedAt": 1790588107994
+}

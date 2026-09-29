@@ -1,0 +1,67 @@
+{
+  "id": "a6d25a4c-a1fe-428f-b016-ca3770923cce",
+  "name": "Test \u00b7 14 Sub-agent",
+  "description": "Node test #14 \u2014 Sub-agent. Webhook body {\"name\":\"Ada\",\"city\":\"Paris\"} \u2192 Sub-agent runs 'Test \u00b7 03 Transform' with those fields as its input \u2192 Output wraps the child's output. Proves a child run starts, finishes and its output flows back.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-sub-14",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "sub-sub-14",
+        "kind": "subagent",
+        "name": "child",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "agentId": "2b03b54d-0c40-47c7-a73f-0dfd53bca75a",
+          "input": "{\"name\":\"{{trigger.name}}\",\"city\":\"{{trigger.city}}\"}",
+          "timeoutValue": 60,
+          "timeoutUnit": "seconds",
+          "onError": "fail"
+        }
+      },
+      {
+        "id": "out-sub-14",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Sub-agent returned: {{nodes.child.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-sub",
+        "source": "trg-sub-14",
+        "target": "sub-sub-14"
+      },
+      {
+        "id": "e-sub-out",
+        "source": "sub-sub-14",
+        "target": "out-sub-14"
+      }
+    ]
+  },
+  "createdAt": 1790312100492,
+  "updatedAt": 1790312100492
+}

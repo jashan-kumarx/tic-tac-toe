@@ -1,0 +1,103 @@
+{
+  "id": "173f2b7b-bde0-4866-b9b7-4770aad8aad7",
+  "name": "Test \u00b7 10 Join",
+  "description": "Node test #10 \u2014 Join. Webhook \u2192 two parallel Transforms (left / right) \u2192 Join (policy all, merge object) waits for both \u2192 Output shows the merged result.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-jon-10",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 320,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "trf-jon-lft",
+        "kind": "transform",
+        "name": "left",
+        "position": {
+          "x": 120,
+          "y": 220
+        },
+        "config": {
+          "template": "LEFT got {{trigger.a}}"
+        }
+      },
+      {
+        "id": "trf-jon-rgt",
+        "kind": "transform",
+        "name": "right",
+        "position": {
+          "x": 520,
+          "y": 220
+        },
+        "config": {
+          "template": "RIGHT got {{trigger.b}}"
+        }
+      },
+      {
+        "id": "jon-jon-10",
+        "kind": "join",
+        "name": "merge",
+        "position": {
+          "x": 320,
+          "y": 380
+        },
+        "config": {
+          "policy": "all",
+          "merge": "object"
+        }
+      },
+      {
+        "id": "out-jon-10",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 320,
+          "y": 540
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Join merged: {{nodes.merge.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-lft",
+        "source": "trg-jon-10",
+        "target": "trf-jon-lft"
+      },
+      {
+        "id": "e-trg-rgt",
+        "source": "trg-jon-10",
+        "target": "trf-jon-rgt"
+      },
+      {
+        "id": "e-lft-jon",
+        "source": "trf-jon-lft",
+        "target": "jon-jon-10"
+      },
+      {
+        "id": "e-rgt-jon",
+        "source": "trf-jon-rgt",
+        "target": "jon-jon-10"
+      },
+      {
+        "id": "e-jon-out",
+        "source": "jon-jon-10",
+        "target": "out-jon-10"
+      }
+    ]
+  },
+  "createdAt": 1790309414585,
+  "updatedAt": 1790309414585
+}

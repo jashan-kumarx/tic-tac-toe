@@ -1,0 +1,88 @@
+{
+  "id": "a3c9d6a8-45f6-4e40-b494-f2bef4af1ca2",
+  "name": "Test \u00b7 09 Loop",
+  "description": "Node test #9 \u2014 Loop. Webhook \u2192 Loop over {{trigger.items}} (sequential) \u2192 body Transform runs once per item \u2192 done Output lists every iteration's result.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-lop-09",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 320,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "lop-lop-09",
+        "kind": "loop",
+        "name": "each",
+        "position": {
+          "x": 320,
+          "y": 220
+        },
+        "config": {
+          "items": "{{trigger.items}}",
+          "mode": "sequential"
+        }
+      },
+      {
+        "id": "trf-lop-09",
+        "kind": "transform",
+        "name": "per-item",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "template": "item {{loop.index}} = {{loop.item}}"
+        }
+      },
+      {
+        "id": "out-lop-09",
+        "kind": "output",
+        "name": "reply-done",
+        "position": {
+          "x": 560,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Loop done. Iterations: {{nodes.each.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-lop",
+        "source": "trg-lop-09",
+        "target": "lop-lop-09"
+      },
+      {
+        "id": "e-lop-body",
+        "source": "lop-lop-09",
+        "target": "trf-lop-09",
+        "sourceHandle": "body"
+      },
+      {
+        "id": "e-body-back",
+        "source": "trf-lop-09",
+        "target": "lop-lop-09"
+      },
+      {
+        "id": "e-lop-done",
+        "source": "lop-lop-09",
+        "target": "out-lop-09",
+        "sourceHandle": "done"
+      }
+    ]
+  },
+  "createdAt": 1790309182941,
+  "updatedAt": 1790309182941
+}
