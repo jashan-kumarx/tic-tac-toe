@@ -1,0 +1,69 @@
+{
+  "id": "6e030f95-1ba8-4d1f-839c-04f83450e001",
+  "name": "Test \u00b7 31 AI agent + Gmail actions (MCP)",
+  "description": "Checks whether an AI agent step can call connector actions (Gmail) on its own. The Gmail tools are only on the AI step, with no separate Connector step, which is exactly the setup we suspect breaks after publishing.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-aimcp",
+        "kind": "trigger",
+        "name": "start",
+        "position": {
+          "x": 320,
+          "y": 60
+        },
+        "config": {
+          "type": "manual"
+        }
+      },
+      {
+        "id": "ai-aimcp",
+        "kind": "ai",
+        "name": "check-gmail",
+        "position": {
+          "x": 320,
+          "y": 220
+        },
+        "config": {
+          "instructions": "You have Gmail tools. 1) Call gmail__gmail_get_profile and report the email address and total message count. 2) Call gmail__gmail_list_messages with maxResults 3 and report how many message ids came back. If you do NOT have any gmail__ tool available, reply exactly: NO_GMAIL_TOOLS. Never guess values \u2014 only report what a tool returned. Answer in max 3 short lines.",
+          "harness": "looper",
+          "model": "claude-haiku-4-5-20251001",
+          "tools": [
+            "gmail__gmail_get_profile",
+            "gmail__gmail_list_messages"
+          ]
+        }
+      },
+      {
+        "id": "out-aimcp",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 320,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "AI + Gmail result:\n{{nodes.check-gmail.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-ai",
+        "source": "trg-aimcp",
+        "target": "ai-aimcp"
+      },
+      {
+        "id": "e-ai-out",
+        "source": "ai-aimcp",
+        "target": "out-aimcp"
+      }
+    ]
+  },
+  "createdAt": 1790751751026,
+  "updatedAt": 1790751816537
+}
