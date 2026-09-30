@@ -35,8 +35,8 @@
           "y": 220
         },
         "config": {
-          "systemPrompt": "You write short, friendly game recaps. Plain text only, no markdown.",
-          "prompt": "A tic-tac-toe game just ended. Result: {{input.winner}} (\"draw\" means nobody won). It took {{input.moves}} moves. Write a 2-sentence recap for the player.",
+          "systemPrompt": "You write one-sentence tic-tac-toe recaps for an email. You already have every detail you need. Never ask questions, never add greetings or markdown. Reply with the recap sentence only.",
+          "prompt": "Game result: {{input.winner}}. Moves played: {{input.moves}}. Write one short, friendly sentence that states the result and the move count, e.g. \"X won in 7 moves - nicely played!\" or \"A hard-fought draw after 9 moves!\".",
           "model": "claude-haiku-4-5-20251001"
         }
       },
