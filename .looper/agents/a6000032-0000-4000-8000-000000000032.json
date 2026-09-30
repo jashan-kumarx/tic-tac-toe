@@ -1,0 +1,119 @@
+{
+  "id": "a6000032-0000-4000-8000-000000000032",
+  "name": "Test · 32 Game summary email (code hook → LLM → Gmail)",
+  "description": "Agent example for the Gmail + LLM gateway flow. The game calls this agent's code hook when a game ends with an email address; an LLM step writes a short upbeat summary and the Gmail connector sends it from the bound mailbox. In production the LLM runs through the LLM gateway and Gmail through the `gmail` alias bound in Production → Config → Connections — no keys in the app.",
+  "enabled": true,
+  "folderId": null,
+  "createdAt": 1790764422785,
+  "updatedAt": 1790764422785,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "hook-ge-32",
+        "kind": "trigger",
+        "name": "game-over",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "code_hook",
+          "auth": {
+            "headerName": "X-Looper-Agent-Token",
+            "enabled": false,
+            "inputKey": "agent_token"
+          }
+        }
+      },
+      {
+        "id": "llm-ge-32",
+        "kind": "llm",
+        "name": "summarize",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "systemPrompt": "You write short, friendly game recaps. Plain text only, no markdown.",
+          "prompt": "A tic-tac-toe game just ended. Result: {{input.winner}} (\"draw\" means nobody won). It took {{input.moves}} moves. Write a 2-sentence recap for the player.",
+          "model": "claude-haiku-4-5-20251001"
+        }
+      },
+      {
+        "id": "con-ge-32",
+        "kind": "connector",
+        "name": "send-email",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "connectorId": "mcp",
+          "action": "call",
+          "params": {
+            "tool": "gmail__gmail_send_message",
+            "params": {
+              "raw_message": "To: {{input.to}}\r\nSubject: Your Tic Tac Toe recap\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n{{nodes.summarize.output}}\r\n\r\nSent by the Tic Tac Toe agent through Looper."
+            }
+          }
+        }
+      },
+      {
+        "id": "out-ge-32",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 80,
+          "y": 540
+        },
+        "config": {
+          "channel": "chat",
+          "body": "Recap emailed to {{input.to}}: {{nodes.summarize.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-ge-32-1",
+        "source": "hook-ge-32",
+        "target": "llm-ge-32"
+      },
+      {
+        "id": "e-ge-32-2",
+        "source": "llm-ge-32",
+        "target": "con-ge-32"
+      },
+      {
+        "id": "e-ge-32-3",
+        "source": "con-ge-32",
+        "target": "out-ge-32"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "in-ge-to",
+        "key": "to",
+        "label": "Recipient email",
+        "kind": "runtime",
+        "required": true
+      },
+      {
+        "id": "in-ge-winner",
+        "key": "winner",
+        "label": "Winner (X, O or draw)",
+        "kind": "runtime",
+        "required": true
+      },
+      {
+        "id": "in-ge-moves",
+        "key": "moves",
+        "label": "Move count",
+        "kind": "runtime",
+        "required": false
+      }
+    ],
+    "maxConcurrency": 4,
+    "capabilities": []
+  }
+}

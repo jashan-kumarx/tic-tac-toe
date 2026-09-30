@@ -14,7 +14,10 @@ A complete, interactive Tic Tac Toe game built with React using functional compo
 ✅ **Move Validation** - Prevents moves on filled squares  
 ✅ **Move History** - Track all moves made during the game  
 ✅ **Time Travel** - Jump back to any previous move  
-✅ **Clean UI** - Simple and responsive design with CSS styling
+✅ **Clean UI** - Simple and responsive design with CSS styling  
+✅ **AI Hint** - Suggests a move via Looper's LLM gateway (rule-based fallback when unwired)  
+✅ **Email Result** - Emails a finished game from a Gmail mailbox bound in Looper  
+✅ **Agent Recap** - A Looper agent (code hook → LLM → Gmail) emails an AI-written recap
 
 ## Project Structure
 
@@ -26,7 +29,8 @@ tic-tac-toe/
 │   ├── src/
 │   │   ├── components/
 │   │   │   ├── Board.js    # Game board component
-│   │   │   └── Square.js   # Individual square component
+│   │   │   ├── Square.js   # Individual square component
+│   │   │   └── AiEmailPanel.js # AI hint + email result/recap controls
 │   │   ├── App.js          # Main app with game logic
 │   │   ├── App.css         # Styling
 │   │   ├── index.js        # Entry point
@@ -36,7 +40,9 @@ tic-tac-toe/
 │   ├── tsconfig.json       # TypeScript configuration
 │   └── package.json        # Client dependencies and scripts
 ├── server/                 # Score API (its own package)
-│   ├── index.js            # Express + pg, reads DATABASE_URL
+│   ├── index.js            # Express + pg, reads DATABASE_URL; /api/hint, /api/email-result
+│   ├── llm.js              # Anthropic calls via Looper's LLM gateway
+│   ├── gmail.js            # Gmail sends via Looper's connectors door
 │   └── package.json        # Server dependencies
 ├── TESTING-DB.md           # How to verify the DB loop in Looper
 └── README.md               # This file
@@ -58,6 +64,36 @@ tic-tac-toe/
 
 3. **Open your browser:**
    The game will automatically open at [http://localhost:3000](http://localhost:3000)
+
+## AI hint & Gmail (Looper integrations)
+
+The app never holds an Anthropic key or a Gmail token — Looper injects
+short-lived stand-ins into the published app, and the **server** makes the
+calls (the LLM gateway refuses browser calls).
+
+| Feature | Server route | Env it needs (injected by Looper) |
+|---|---|---|
+| AI hint | `POST /api/hint` `{ squares, next }` | `GATEWAY_URL`, `LOOPER_VAT`, `LOOPER_APP_KEY` |
+| Email result | `POST /api/email-result` `{ to, winner, moves }` | `LOOPER_CONNECTORS_URL`, `LOOPER_CONNECTORS_TOKEN` |
+| Status | `GET /api/integrations` | — (reports what's wired, never values) |
+
+**Production setup:**
+
+1. Connect Gmail in Looper (Connections) under the alias `gmail`.
+2. Production tab → **Config → Connections**: bind `gmail` to that connection.
+3. Production tab → **LLM gateway**: turn it on for this app.
+4. Publish. The UI badges should read *LLM: LLM gateway* and *Gmail: connected*.
+
+**Dev:** without a gateway the hint uses `ANTHROPIC_API_KEY` from the server
+runner's env if set, else a rule-based move (win → block → centre → corner).
+Email answers `503` with a setup hint until the connectors env is present.
+Optional `HINT_MODEL` overrides the model (default `claude-haiku-4-5-20251001`).
+
+**Agent example — Test · 32** (`.looper/agents/a6000032-….json`): the
+*Email AI recap (agent)* button calls its code hook with `{ to, winner, moves }`;
+an LLM step writes a two-sentence recap and the Gmail connector
+(`gmail__gmail_send_message`) sends it. Publishing the agent lists `gmail` in
+the publish form's Connections box — bind it there.
 
 ## How to Play
 

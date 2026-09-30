@@ -1,6 +1,7 @@
 import { Looper } from './codehook/index.js';
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Board from "./components/Board";
+import AiEmailPanel from "./components/AiEmailPanel";
 import { parseScores, describeScoreError } from "./lib/scores.mjs";
 
 const App = () => {
@@ -197,6 +198,13 @@ const App = () => {
           {agentMessage && (
             <p className="agent-message" data-cmp="game.agent-message_text">{agentMessage}</p>
           )}
+          <AiEmailPanel
+            squares={currentSquares}
+            next={xIsNext ? "X" : "O"}
+            gameOver={gameOver}
+            result={winner || (isDraw ? "draw" : null)}
+            moves={currentMove}
+          />
         </div>
         <div className="game-info">
           <h3>Move History</h3>

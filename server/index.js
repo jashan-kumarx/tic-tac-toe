@@ -7,6 +7,8 @@
 const express = require("express");
 const { Pool } = require("pg");
 const { isRecoverableDbError } = require("./dbErrors");
+const { validateBoard, getHint, resolveLlmTarget } = require("./llm");
+const { isValidEmail, sendResultEmail, connectorsConfigured } = require("./gmail");
 
 const dbUrl = process.env.DATABASE_URL;
 if (!dbUrl) {
@@ -86,6 +88,42 @@ app.post("/api/scores", async (req, res) => {
     res.json({ id: rows[0].id, winner });
   } catch (err) {
     res.status(503).json({ error: String(err.message || err) });
+  }
+});
+
+// Which Looper integrations this process can reach — lets the UI explain a
+// missing binding instead of failing on click. Never exposes the values.
+app.get("/api/integrations", (_req, res) => {
+  const llm = resolveLlmTarget(process.env);
+  res.json({ llm: llm ? llm.mode : "fallback", gmail: connectorsConfigured(process.env) });
+});
+
+// AI move hint via the LLM gateway (server-side only: the gateway refuses browsers).
+app.post("/api/hint", async (req, res) => {
+  const { squares, next } = req.body || {};
+  const invalid = validateBoard(squares, next);
+  if (invalid) return res.status(400).json({ error: invalid });
+  try {
+    res.json(await getHint(squares, next));
+  } catch (err) {
+    console.warn("[ttt-db] hint failed:", err.message);
+    res.status(502).json({ error: "The AI hint service is unavailable right now." });
+  }
+});
+
+// Email a finished game's result from the bound Gmail mailbox.
+app.post("/api/email-result", async (req, res) => {
+  const { to, winner, moves } = req.body || {};
+  if (!isValidEmail(to)) return res.status(400).json({ error: "to must be a single email address" });
+  if (!["X", "O", "draw"].includes(winner)) return res.status(400).json({ error: "winner must be X, O or draw" });
+  try {
+    await sendResultEmail({ to, winner, moves: Number(moves) });
+    res.json({ ok: true });
+  } catch (err) {
+    console.warn("[ttt-db] email failed:", err.code || "", err.message);
+    // 4xx / 503 carry meaning (bad address, not wired); anything else is upstream.
+    const status = err.status === 503 || (err.status >= 400 && err.status < 500) ? err.status : 502;
+    res.status(status).json({ error: err.message, code: err.code });
   }
 });
 

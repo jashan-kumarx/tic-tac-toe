@@ -16,7 +16,7 @@ WORKDIR /workspace/server
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev
 
-COPY index.js ./
+COPY *.js ./
 
 # DATABASE_URL is injected per runner ({{db.<name>.url}}); Looper sets PORT.
 ENV NODE_ENV=production \
