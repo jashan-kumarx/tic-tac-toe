@@ -1,0 +1,71 @@
+{
+  "id": "a6000030-0000-4000-8000-000000000030",
+  "name": "Test \u00b7 30 Runtime inputs (ask)",
+  "description": "Runtime-inputs test, missing = Ask a person. Same inputs as #29. In production a missing customer_name pauses the run (Waiting) until someone fills it in from Agent runs.",
+  "enabled": true,
+  "folderId": null,
+  "createdAt": 1790746795088,
+  "updatedAt": 1790746795088,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-rt-30",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 240,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "out-rt-30",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 240,
+          "y": 240
+        },
+        "config": {
+          "channel": "chat",
+          "body": "{{input.greeting}} {{input.customer_name}} \u2705 \u2014 order: [{{input.order_id}}]"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-rt-30",
+        "source": "trg-rt-30",
+        "target": "out-rt-30"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "in-customer-name",
+        "key": "customer_name",
+        "label": "Customer name",
+        "kind": "runtime",
+        "required": true
+      },
+      {
+        "id": "in-order-id",
+        "key": "order_id",
+        "label": "Order id",
+        "kind": "runtime",
+        "required": false
+      },
+      {
+        "id": "in-greeting",
+        "key": "greeting",
+        "label": "Greeting",
+        "kind": "constant",
+        "value": "Hello",
+        "required": true
+      }
+    ],
+    "missingInputs": "ask"
+  }
+}

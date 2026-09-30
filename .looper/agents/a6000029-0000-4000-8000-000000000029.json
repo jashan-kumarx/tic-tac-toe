@@ -1,0 +1,71 @@
+{
+  "id": "a6000029-0000-4000-8000-000000000029",
+  "name": "Test \u00b7 29 Runtime inputs (fail)",
+  "description": "Runtime-inputs test, missing = Fail. customer_name required, order_id optional, greeting constant. Missing customer_name must fail with 'Missing required runtime input: customer_name'.",
+  "enabled": true,
+  "folderId": null,
+  "createdAt": 1790746795088,
+  "updatedAt": 1790746795088,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-rt-29",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 240,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "out-rt-29",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 240,
+          "y": 240
+        },
+        "config": {
+          "channel": "chat",
+          "body": "{{input.greeting}} {{input.customer_name}} \u2705 \u2014 order: [{{input.order_id}}]"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-rt-29",
+        "source": "trg-rt-29",
+        "target": "out-rt-29"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "in-customer-name",
+        "key": "customer_name",
+        "label": "Customer name",
+        "kind": "runtime",
+        "required": true
+      },
+      {
+        "id": "in-order-id",
+        "key": "order_id",
+        "label": "Order id",
+        "kind": "runtime",
+        "required": false
+      },
+      {
+        "id": "in-greeting",
+        "key": "greeting",
+        "label": "Greeting",
+        "kind": "constant",
+        "value": "Hello",
+        "required": true
+      }
+    ],
+    "missingInputs": "fail"
+  }
+}
