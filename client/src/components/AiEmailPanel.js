@@ -76,7 +76,7 @@ const AiEmailPanel = ({ squares, next, gameOver, result, moves }) => {
     setSendState({ kind: "busy", text: "Agent is writing the recap…" });
     Looper.automation.codeHook(
       RECAP_HOOK,
-      { to: email.trim(), winner: result, moves: String(moves) },
+      { to: email.trim(), winner: result === "draw" ? "draw" : `${result} won`, moves: String(moves) },
       (err) => {
         if (err) setSendState({ kind: "error", text: `Agent failed to start: ${err.message || err}` });
       },
@@ -91,21 +91,24 @@ const AiEmailPanel = ({ squares, next, gameOver, result, moves }) => {
 
   return (
     <div className="ai-panel" data-cmp="game.ai-panel_wrap">
-      <div className="ai-panel-status" data-cmp="game.ai-status_row">
-        {integrations === null ? (
-          <span className="ai-badge" data-cmp="game.ai-status_loading">Checking integrations…</span>
-        ) : integrations.error ? (
-          <span className="ai-badge ai-badge-warn" data-cmp="game.ai-status_error">Integrations unknown</span>
-        ) : (
-          <>
-            <span className={`ai-badge ${integrations.llm === "fallback" ? "ai-badge-warn" : "ai-badge-ok"}`} data-cmp="game.ai-status-llm_badge">
-              LLM: {LLM_LABEL[integrations.llm] || integrations.llm}
-            </span>
-            <span className={`ai-badge ${integrations.gmail ? "ai-badge-ok" : "ai-badge-warn"}`} data-cmp="game.ai-status-gmail_badge">
-              Gmail: {integrations.gmail ? "connected" : "not bound"}
-            </span>
-          </>
-        )}
+      <div className="ai-panel-head" data-cmp="game.ai-head_row">
+        <span className="ai-panel-title" data-cmp="game.ai-title_text">AI &amp; email</span>
+        <div className="ai-panel-status" data-cmp="game.ai-status_row">
+          {integrations === null ? (
+            <span className="ai-badge" data-cmp="game.ai-status_loading">Checking integrations…</span>
+          ) : integrations.error ? (
+            <span className="ai-badge ai-badge-warn" data-cmp="game.ai-status_error">Integrations unknown</span>
+          ) : (
+            <>
+              <span className={`ai-badge ${integrations.llm === "fallback" ? "ai-badge-warn" : "ai-badge-ok"}`} data-cmp="game.ai-status-llm_badge">
+                LLM: {LLM_LABEL[integrations.llm] || integrations.llm}
+              </span>
+              <span className={`ai-badge ${integrations.gmail ? "ai-badge-ok" : "ai-badge-warn"}`} data-cmp="game.ai-status-gmail_badge">
+                Gmail: {integrations.gmail ? "connected" : "not bound"}
+              </span>
+            </>
+          )}
+        </div>
       </div>
 
       <button className="ai-button" data-cmp="game.ai-hint_button" onClick={askHint} disabled={gameOver || hintBusy}>
@@ -116,7 +119,11 @@ const AiEmailPanel = ({ squares, next, gameOver, result, moves }) => {
       )}
 
       <div className="ai-email" data-cmp="game.ai-email_wrap">
+        <label className="ai-email-label" htmlFor="ai-email-input" data-cmp="game.ai-email_label">
+          Send the result to
+        </label>
         <input
+          id="ai-email-input"
           className="ai-email-input"
           data-cmp="game.ai-email_input"
           type="email"
@@ -125,11 +132,11 @@ const AiEmailPanel = ({ squares, next, gameOver, result, moves }) => {
           onChange={(e) => setEmail(e.target.value)}
         />
         <div className="ai-email-actions" data-cmp="game.ai-email-actions_row">
-          <button className="ai-button" data-cmp="game.ai-email-direct_button" onClick={sendDirect} disabled={!canSend}>
+          <button className="ai-button" data-cmp="game.ai-email-direct_button" onClick={sendDirect} disabled={!canSend} title="The app's own server sends a fixed result email via the Gmail connection">
             Email result
           </button>
-          <button className="ai-button ai-button-alt" data-cmp="game.ai-email-agent_button" onClick={sendViaAgent} disabled={!canSend}>
-            Email AI recap (agent)
+          <button className="ai-button ai-button-alt" data-cmp="game.ai-email-agent_button" onClick={sendViaAgent} disabled={!canSend} title="Runs the Test 32 agent: an AI step writes a recap, then its Gmail step sends it">
+            Email AI recap
           </button>
         </div>
         {!gameOver && (
@@ -139,7 +146,7 @@ const AiEmailPanel = ({ squares, next, gameOver, result, moves }) => {
           <p className="ai-note ai-note-error" data-cmp="game.ai-email-invalid_text">Enter a single valid email address.</p>
         )}
         {sendState && (
-          <p className={`ai-note ${sendState.kind === "error" ? "ai-note-error" : sendState.kind === "ok" ? "ai-note-ok" : ""}`} data-cmp="game.ai-email-status_text">
+          <p className={`ai-note ${sendState.kind === "error" ? "ai-note-error" : sendState.kind === "ok" ? "ai-note-ok" : "ai-note-busy"}`} data-cmp="game.ai-email-status_text">
             {sendState.text}
           </p>
         )}

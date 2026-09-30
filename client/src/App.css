@@ -43,6 +43,8 @@ body {
 }
 
 .game-board {
+  width: 360px;
+  max-width: 100%;
   background: white;
   padding: 30px;
   border-radius: 15px;
@@ -59,7 +61,38 @@ body {
 }
 
 .board {
-  display: inline-block;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+/* Dev test buttons for the Test 1 code hooks (App.js). */
+.hook-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.hook-buttons button {
+  flex: 1;
+  padding: 7px 10px;
+  font-size: 0.8rem;
+  color: #4b5563;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.hook-buttons button:hover {
+  border-color: #667eea;
+  color: #333;
+}
+
+.agent-message {
+  margin-top: 8px;
+  font-size: 0.8rem;
+  color: #4b5563;
+  overflow-wrap: anywhere;
 }
 
 .board-row {
@@ -134,7 +167,8 @@ body {
   padding: 30px;
   border-radius: 15px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  min-width: 250px;
+  width: 320px;
+  max-width: 100%;
   max-height: 400px;
   overflow-y: auto;
 }
@@ -215,12 +249,31 @@ body {
   }
 }
 
-/* AI hint + result email (AiEmailPanel) */
+/* AI hint + result email (AiEmailPanel). Sits inside the white .game-board
+   card, so every colour here is for a light background. */
 .ai-panel {
   margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
   display: flex;
   flex-direction: column;
   gap: 10px;
+}
+
+.ai-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ai-panel-title {
+  font-size: 0.75rem;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6b7280;
 }
 
 .ai-panel-status {
@@ -231,18 +284,22 @@ body {
 
 .ai-badge {
   padding: 3px 8px;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
+  font-weight: 600;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.15);
-  color: white;
+  background: #f1f5f9;
+  color: #475569;
+  white-space: nowrap;
 }
 
 .ai-badge-ok {
-  background: rgba(34, 197, 94, 0.25);
+  background: #dcfce7;
+  color: #166534;
 }
 
 .ai-badge-warn {
-  background: rgba(245, 158, 11, 0.3);
+  background: #fef3c7;
+  color: #92400e;
 }
 
 .ai-button {
@@ -254,14 +311,23 @@ body {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.ai-button:hover:not(:disabled) {
+  background: #643d8c;
 }
 
 .ai-button-alt {
   background: #667eea;
 }
 
+.ai-button-alt:hover:not(:disabled) {
+  background: #5568d3;
+}
+
 .ai-button:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
@@ -269,9 +335,11 @@ body {
   margin: 0;
   padding: 8px 10px;
   font-size: 0.85rem;
-  color: #333;
-  background: white;
-  border-radius: 8px;
+  line-height: 1.4;
+  color: #4c1d95;
+  background: #f5f3ff;
+  border-left: 3px solid #764ba2;
+  border-radius: 6px;
 }
 
 .ai-email {
@@ -280,11 +348,25 @@ body {
   gap: 8px;
 }
 
+.ai-email-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #374151;
+}
+
 .ai-email-input {
-  padding: 8px 10px;
+  width: 100%;
+  padding: 9px 10px;
   font-size: 0.9rem;
-  border: 1px solid #ccc;
+  color: #111827;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
+}
+
+.ai-email-input:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
 }
 
 .ai-email-actions {
@@ -294,18 +376,35 @@ body {
 
 .ai-email-actions .ai-button {
   flex: 1;
+  padding: 10px 8px;
 }
 
 .ai-note {
   margin: 0;
   font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.4;
+  color: #6b7280;
+  overflow-wrap: anywhere;
+}
+
+.ai-note-ok,
+.ai-note-error,
+.ai-note-busy {
+  padding: 8px 10px;
+  border-radius: 6px;
 }
 
 .ai-note-ok {
-  color: #bbf7d0;
+  color: #166534;
+  background: #dcfce7;
 }
 
 .ai-note-error {
-  color: #fecaca;
+  color: #b91c1c;
+  background: #fee2e2;
+}
+
+.ai-note-busy {
+  color: #1e40af;
+  background: #dbeafe;
 }
