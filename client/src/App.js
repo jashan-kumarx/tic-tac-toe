@@ -1,3 +1,4 @@
+import { Looper } from './codehook/index.js';
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import Board from "./components/Board";
 import { parseScores, describeScoreError } from "./lib/scores.mjs";
@@ -100,6 +101,18 @@ const App = () => {
 
   useEffect(refreshScores, [refreshScores]);
 
+  // A5 test: one agent, two code hooks — each button must run only its own branch.
+  const [agentMessage, setAgentMessage] = useState(null);
+  const callHook = (hookId) => {
+    Looper.automation.codeHook('/api/agents/b833acdd-fcd6-4732-83a9-8ecc12b8743b/code-hook/YOUR_HOOK_TOKEN/' + hookId + '?devSessionId=YOUR_DEV_SESSION_ID', { from: 'button ' + hookId }, (err) => {
+      if (err) console.error(err);
+    }, (err, result) => {
+      if (err) return console.error(err);
+      console.log(hookId, result);
+      setAgentMessage(typeof result === 'string' ? result : JSON.stringify(result));
+    });
+  };
+
   // Record each finished game once into the PostgreSQL score API (best-effort).
   const gameOver = Boolean(winner) || isDraw;
   useEffect(() => {
@@ -120,6 +133,14 @@ const App = () => {
           return;
         }
         refreshScores();
+        Looper.automation.codeHook('/api/agents/14c4a04a-5813-4766-91b8-64c6ff8c04d4/code-hook/YOUR_HOOK_TOKEN/hook-ch-19?devSessionId=YOUR_DEV_SESSION_ID', { winner: '...' }, (err, run) => {
+  // Fires once the run is queued, then again on each poll while it's running — NOT the flow's result yet.
+  if (err) console.error(err);
+}, (err, result) => {
+  // Fires once the flow actually finishes running.
+  if (err) return console.error(err);
+  console.log(result);
+});
       } catch {
         recordedRef.current = false;
         setDbError(describeScoreError(null));
@@ -169,6 +190,13 @@ const App = () => {
           <button className="restart-button" onClick={restartGame}>
             Restart Game
           </button>
+          <div className="hook-buttons" data-cmp="game.hook-buttons_wrap">
+            <button data-cmp="game.hook-a_button" onClick={() => callHook('hook-a')}>Call hook A</button>
+            <button data-cmp="game.hook-b_button" onClick={() => callHook('hook-b')}>Call hook B</button>
+          </div>
+          {agentMessage && (
+            <p className="agent-message" data-cmp="game.agent-message_text">{agentMessage}</p>
+          )}
         </div>
         <div className="game-info">
           <h3>Move History</h3>

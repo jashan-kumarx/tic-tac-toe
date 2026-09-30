@@ -1,7 +1,7 @@
 {
   "id": "0b608806-eb48-45e6-9d23-a1800afed22d",
-  "name": "Test \u00b7 01 End",
-  "description": "Node test #1 \u2014 End. Webhook \u2192 End (graceful, exitStatus succeeded). The run should finish as succeeded with the summary echoing the trigger body.",
+  "name": "Test · 01 End",
+  "description": "Node test #1 — End. Webhook → End (graceful, exitStatus succeeded). The run should finish as succeeded with the summary echoing the trigger body.",
   "enabled": true,
   "folderId": null,
   "definition": {

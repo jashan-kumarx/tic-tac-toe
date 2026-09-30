@@ -1,7 +1,7 @@
 {
   "id": "a6000027-0000-4000-8000-000000000027",
-  "name": "Test \u00b7 27 Approval",
-  "description": "Human-in-the-loop test. Manual trigger \u2192 Approval \u2192 Approved/Rejected outputs. Run it, approve or reject, and the matching output should fire.",
+  "name": "Test · 27 Approval",
+  "description": "Human-in-the-loop test. Manual trigger → Approval → Approved/Rejected outputs. Run it, approve or reject, and the matching output should fire.",
   "enabled": true,
   "folderId": null,
   "definition": {
@@ -48,7 +48,7 @@
         },
         "config": {
           "channel": "chat",
-          "body": "APPROVED \u2014 the report would be sent now."
+          "body": "APPROVED — the report would be sent now."
         }
       },
       {
@@ -61,7 +61,7 @@
         },
         "config": {
           "channel": "chat",
-          "body": "REJECTED \u2014 nothing was sent."
+          "body": "REJECTED — nothing was sent."
         }
       }
     ],

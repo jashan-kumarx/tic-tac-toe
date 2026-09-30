@@ -1,7 +1,7 @@
 {
   "id": "a6000023-0000-4000-8000-000000000023",
-  "name": "Test \u00b7 23 Required input (A6)",
-  "description": "A6 local test. Runtime input 'customer' is required \u2014 calling without it must return 400.",
+  "name": "Test · 23 Required input (A6)",
+  "description": "A6 local test. Runtime input 'customer' is required — calling without it must return 400.",
   "enabled": true,
   "folderId": null,
   "createdAt": 1790399124206,
@@ -36,7 +36,7 @@
         },
         "config": {
           "channel": "chat",
-          "body": "Hello {{input.customer}} \u2705"
+          "body": "Hello {{input.customer}} ✅"
         }
       }
     ],

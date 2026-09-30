@@ -1,7 +1,7 @@
 {
   "id": "2b03b54d-0c40-47c7-a73f-0dfd53bca75a",
-  "name": "Test \u00b7 03 Transform",
-  "description": "Node test #3 \u2014 Transform. Webhook body {\"name\":\"Ada\",\"city\":\"Paris\"} \u2192 Transform builds a JSON object from the body fields \u2192 Output reads the Transform's fields back. Proves template rendering, trigger field lookup and node-field parsing.",
+  "name": "Test · 03 Transform",
+  "description": "Node test #3 — Transform. Webhook body {\"name\":\"Ada\",\"city\":\"Paris\"} → Transform builds a JSON object from the body fields → Output reads the Transform's fields back. Proves template rendering, trigger field lookup and node-field parsing.",
   "enabled": true,
   "folderId": null,
   "definition": {

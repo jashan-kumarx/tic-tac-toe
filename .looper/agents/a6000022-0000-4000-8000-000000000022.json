@@ -1,7 +1,7 @@
 {
   "id": "a6000022-0000-4000-8000-000000000022",
-  "name": "Test \u00b7 22 Ingress options (A6)",
-  "description": "A6 local test. hook-auth: header auth (X-Looper-Agent-Token). hook-headers: reads x-test-header. hook-schema: amount must be a number 1\u2013100.",
+  "name": "Test · 22 Ingress options (A6)",
+  "description": "A6 local test. hook-auth: header auth (X-Looper-Agent-Token). hook-headers: reads x-test-header. hook-schema: amount must be a number 1–100.",
   "enabled": true,
   "folderId": null,
   "createdAt": 1790399124206,
@@ -89,7 +89,7 @@
         },
         "config": {
           "channel": "chat",
-          "body": "Auth passed \u2705"
+          "body": "Auth passed ✅"
         }
       },
       {
@@ -115,7 +115,7 @@
         },
         "config": {
           "channel": "chat",
-          "body": "Schema passed \u2705 amount = {{input.amount}}"
+          "body": "Schema passed ✅ amount = {{input.amount}}"
         }
       }
     ],

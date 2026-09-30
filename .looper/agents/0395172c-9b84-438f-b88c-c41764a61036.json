@@ -1,7 +1,7 @@
 {
   "id": "0395172c-9b84-438f-b88c-c41764a61036",
-  "name": "Test \u00b7 05 HTTP",
-  "description": "Node test #5 \u2014 HTTP. Webhook \u2192 HTTP GET https://example.com?format=json (waits for the response) \u2192 Output shows status + body. The body is the caller's public IP, so local shows your Mac's IP and production shows the EC2 host's IP.",
+  "name": "Test · 05 HTTP",
+  "description": "Node test #5 — HTTP. Webhook → HTTP GET https://example.com?format=json (waits for the response) → Output shows status + body. The body is the caller's public IP, so local shows your Mac's IP and production shows the EC2 host's IP.",
   "enabled": true,
   "folderId": null,
   "definition": {

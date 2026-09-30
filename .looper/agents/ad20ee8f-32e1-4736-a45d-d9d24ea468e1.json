@@ -1,7 +1,7 @@
 {
   "id": "ad20ee8f-32e1-4736-a45d-d9d24ea468e1",
-  "name": "Test \u00b7 08 Switch",
-  "description": "Node test #8 \u2014 Switch. Webhook \u2192 Switch on {{trigger.priority}} with cases urgent / normal, plus default \u2192 one reply per route. Only the matched route runs; the others are skipped.",
+  "name": "Test · 08 Switch",
+  "description": "Node test #8 — Switch. Webhook → Switch on {{trigger.priority}} with cases urgent / normal, plus default → one reply per route. Only the matched route runs; the others are skipped.",
   "enabled": true,
   "folderId": null,
   "definition": {

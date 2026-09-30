@@ -1,7 +1,7 @@
 {
   "id": "665b05f5-4115-4607-9505-2fd60187d311",
-  "name": "Test \u00b7 02 Output",
-  "description": "Node test #2 \u2014 Output. Webhook \u2192 Output (chat channel). The run should succeed and its final output should echo the trigger body.",
+  "name": "Test · 02 Output",
+  "description": "Node test #2 — Output. Webhook → Output (chat channel). The run should succeed and its final output should echo the trigger body.",
   "enabled": true,
   "folderId": null,
   "definition": {

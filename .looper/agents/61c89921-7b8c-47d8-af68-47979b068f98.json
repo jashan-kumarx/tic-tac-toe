@@ -1,7 +1,7 @@
 {
   "id": "61c89921-7b8c-47d8-af68-47979b068f98",
-  "name": "Test \u00b7 07 Branch",
-  "description": "Node test #7 \u2014 Branch (condition). Webhook \u2192 Branch on {{trigger.answer}} equals 'yes' \u2192 YES reply or NO reply. Only one output should run; the other is skipped.",
+  "name": "Test · 07 Branch",
+  "description": "Node test #7 — Branch (condition). Webhook → Branch on {{trigger.answer}} equals 'yes' → YES reply or NO reply. Only one output should run; the other is skipped.",
   "enabled": true,
   "folderId": null,
   "definition": {

@@ -1,11 +1,11 @@
 {
   "id": "a6000030-0000-4000-8000-000000000030",
-  "name": "Test \u00b7 30 Runtime inputs (ask)",
+  "name": "Test · 30 Runtime inputs (ask)",
   "description": "Runtime-inputs test, missing = Ask a person. Same inputs as #29. In production a missing customer_name pauses the run (Waiting) until someone fills it in from Agent runs.",
   "enabled": true,
   "folderId": null,
   "createdAt": 1790746795088,
-  "updatedAt": 1790746795088,
+  "updatedAt": 1790747418939,
   "definition": {
     "schemaVersion": "2.0",
     "nodes": [
@@ -31,7 +31,7 @@
         },
         "config": {
           "channel": "chat",
-          "body": "{{input.greeting}} {{input.customer_name}} \u2705 \u2014 order: [{{input.order_id}}]"
+          "body": "{{input.greeting}} {{input.customer_name}} ✅ — order: [{{input.order_id}}]"
         }
       }
     ],

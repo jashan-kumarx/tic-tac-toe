@@ -1,7 +1,7 @@
 {
   "id": "613f7096-61fe-4216-9773-c0a0571009e3",
-  "name": "Test \u00b7 11 Retry",
-  "description": "Node test #11 \u2014 Retry. Webhook \u2192 Transform 'attempt' \u2192 Branch on {{trigger.ok}} == yes. YES \u2192 success reply. NO \u2192 Retry (max 2) sends the flow back to 'attempt'; after 2 retries it takes the exhausted route \u2192 give-up reply.",
+  "name": "Test · 11 Retry",
+  "description": "Node test #11 — Retry. Webhook → Transform 'attempt' → Branch on {{trigger.ok}} == yes. YES → success reply. NO → Retry (max 2) sends the flow back to 'attempt'; after 2 retries it takes the exhausted route → give-up reply.",
   "enabled": true,
   "folderId": null,
   "definition": {

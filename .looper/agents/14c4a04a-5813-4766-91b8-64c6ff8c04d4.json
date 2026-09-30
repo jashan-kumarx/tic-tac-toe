@@ -1,7 +1,7 @@
 {
   "id": "14c4a04a-5813-4766-91b8-64c6ff8c04d4",
-  "name": "Test \u00b7 19 Code hook",
-  "description": "Node test #19 \u2014 Code hook trigger. Your own code calls this agent through a snippet (Code panel \u2192 right-click \u2192 Add code hook). Code hook \u2192 output. Expected: runs locally and onComplete receives the reply text. Header auth is OFF.",
+  "name": "Test · 19 Code hook",
+  "description": "Node test #19 — Code hook trigger. Your own code calls this agent through a snippet (Code panel → right-click → Add code hook). Code hook → output. Expected: runs locally and onComplete receives the reply text. Header auth is OFF.",
   "enabled": true,
   "folderId": null,
   "createdAt": 1790315863347,

@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "name": "API Collection",
+  "activeEnvironment": null,
+  "folders": [],
+  "requests": [
+    {
+      "id": "9c5f7cd4-b93f-42d1-9e59-5183e484d428",
+      "name": "GET /api/agents/0b608806-eb48-45e6-9d23-a1800afed22d/webhook/YOUR_HOOK_TOKEN",
+      "method": "GET",
+      "url": "http://localhost:6002/api/agents/0b608806-eb48-45e6-9d23-a1800afed22d/webhook/YOUR_HOOK_TOKEN?devSessionId=YOUR_DEV_SESSION_ID",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json",
+          "enabled": true
+        }
+      ],
+      "body": {
+        "type": "json",
+        "content": ""
+      }
+    }
+  ],
+  "environments": {}
+}
