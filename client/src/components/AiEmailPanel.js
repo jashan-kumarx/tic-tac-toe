@@ -4,7 +4,7 @@ import { isValidEmail, describeHint, describeApiError } from "../lib/integration
 
 // Test · 32 — code hook → LLM recap → Gmail send (see .looper/agents/a6000032-….json).
 const RECAP_HOOK =
-  "/api/agents/a6000032-0000-4000-8000-000000000032/code-hook/YOUR_HOOK_TOKEN/hook-ge-32?devSessionId=YOUR_DEV_SESSION_ID";
+  "/api/agents/a6000032-0000-4000-8000-000000000032/code-hook/__TOKEN__/hook-ge-32?devSessionId=YOUR_DEV_SESSION_ID";
 
 const LLM_LABEL = { gateway: "LLM gateway", direct: "Anthropic key (dev)", fallback: "not wired — rule-based hints" };
 

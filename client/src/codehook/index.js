@@ -82,11 +82,51 @@ function resolveHookOrigin() {
 // Absolute URIs (older snippets) pass through unchanged; a relative one is
 // resolved against `options.origin`, then the env origin, then the page.
 function resolveHookUri(uri, options) {
-  if (uri.indexOf('://') !== -1) return uri;
+  if (uri.indexOf('://') !== -1) return resolveUrlToken(uri);
   const base = (options && options.origin) || resolveHookOrigin()
     || (typeof window !== 'undefined' ? window.location.origin : '');
   if (!base) throw new Error('Looper code hook: set LOOPER_CODE_HOOK_ORIGIN or pass options.origin outside the browser');
-  return new URL(uri, base).toString();
+  return resolveUrlToken(new URL(uri, base).toString());
+}
+
+// The code-hook URL token (the `/code-hook/<token>/` segment). Snippets carry
+// the marker below and Looper hands every runner the real value in
+// `LOOPER_CODE_HOOK_URL_TOKENS` (`{"<agentId>": token}`, same four forms), so
+// no secret is ever written into source. Older snippets with a literal token
+// pass through untouched.
+// Published browser builds carry no code-hook tokens (design 2026-10-06, gap 6):
+// Looper sets this flag instead and the gateway accepts the app's own login
+// cookie on `/code-hook/session/<hookId>`. Server-side code in the same app
+// has no `window` and keeps the plain token vars, so it stays in token mode.
+function browserSessionAuth() {
+  if (typeof window === 'undefined') return false;
+  var flag = readEnv(() => process.env.LOOPER_CODE_HOOK_BROWSER_AUTH)
+    || readEnv(() => import.meta.env.VITE_LOOPER_CODE_HOOK_BROWSER_AUTH)
+    || readEnv(() => process.env.REACT_APP_LOOPER_CODE_HOOK_BROWSER_AUTH)
+    || readEnv(() => process.env.NEXT_PUBLIC_LOOPER_CODE_HOOK_BROWSER_AUTH);
+  return flag === 'session';
+}
+
+var URL_TOKEN_MARKER = '__TOKEN__';
+function readUrlTokens() {
+  var raw = readEnv(() => process.env.LOOPER_CODE_HOOK_URL_TOKENS)
+    || readEnv(() => import.meta.env.VITE_LOOPER_CODE_HOOK_URL_TOKENS)
+    || readEnv(() => process.env.REACT_APP_LOOPER_CODE_HOOK_URL_TOKENS)
+    || readEnv(() => process.env.NEXT_PUBLIC_LOOPER_CODE_HOOK_URL_TOKENS);
+  if (!raw) return {};
+  if (typeof raw === 'object') return raw;
+  try { return JSON.parse(raw) || {}; } catch (_) { return {}; }
+}
+function resolveUrlToken(uri) {
+  var needle = '/code-hook/' + URL_TOKEN_MARKER + '/';
+  if (uri.indexOf(needle) === -1) return uri;
+  if (browserSessionAuth()) return uri.replace(needle, '/code-hook/session/');
+  var m = /\/api\/agents\/([^/?#]+)\/code-hook\/__TOKEN__\//.exec(uri);
+  var token = m ? readUrlTokens()[decodeURIComponent(m[1])] : undefined;
+  if (!token) {
+    throw new Error('Looper code hook: no URL token for agent ' + (m ? m[1] : '?') + ' in LOOPER_CODE_HOOK_URL_TOKENS — Looper sets it on every runner; restart the runner after generating or rotating the token');
+  }
+  return uri.replace(needle, '/code-hook/' + encodeURIComponent(token) + '/');
 }
 
 function sleep(ms, state) {
@@ -171,9 +211,13 @@ export const Looper = {
      * when omitted — this hook's entry in `LOOPER_CODE_HOOK_TOKENS` (or its
      * bundler-prefixed form), which Looper fills in — so never hard-code it.
      *
+     * A `__TOKEN__` segment in `uri` is filled from `LOOPER_CODE_HOOK_URL_TOKENS`.
+     *
      * `options.headers` adds extra request headers, for a trigger that reads
-     * them as `{{trigger.headers.*}}`. They apply to the trigger request only
-     * (status polling sends auth alone) and can never overwrite the auth header.
+     * them as `{{trigger.headers.*}}`. In the flow they arrive as sink-only
+     * placeholders unless the trigger marks a header readable. They apply to the
+     * trigger request only (status polling sends auth alone) and can never
+     * overwrite the auth header.
      */
     codeHook(uri, params, onPoll, onComplete, options) {
       let target;
@@ -185,7 +229,10 @@ export const Looper = {
       }
       // The hook's own token first; the listener token stays as the fallback
       // so a hook without Authentication behaves exactly as before.
-      const token = (options && options.token) || resolveHookToken(target) || resolveAgentToken();
+      // Session mode (browser, published app): the login cookie is the credential — no token, no header.
+      const token = browserSessionAuth()
+        ? undefined
+        : (options && options.token) || resolveHookToken(target) || resolveAgentToken();
       const authHeaders = token
         ? { [(options && options.headerName) || 'X-Looper-Agent-Token']: token }
         : {};

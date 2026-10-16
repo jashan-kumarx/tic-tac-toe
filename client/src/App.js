@@ -105,7 +105,7 @@ const App = () => {
   // A5 test: one agent, two code hooks — each button must run only its own branch.
   const [agentMessage, setAgentMessage] = useState(null);
   const callHook = (hookId) => {
-    Looper.automation.codeHook('/api/agents/b833acdd-fcd6-4732-83a9-8ecc12b8743b/code-hook/YOUR_HOOK_TOKEN/' + hookId + '?devSessionId=YOUR_DEV_SESSION_ID', { from: 'button ' + hookId }, (err) => {
+    Looper.automation.codeHook('/api/agents/b833acdd-fcd6-4732-83a9-8ecc12b8743b/code-hook/__TOKEN__/' + hookId + '?devSessionId=3a021509-696d-4173-bbc5-dc6a7176ec72', { from: 'button ' + hookId }, (err) => {
       if (err) console.error(err);
     }, (err, result) => {
       if (err) return console.error(err);
@@ -134,7 +134,7 @@ const App = () => {
           return;
         }
         refreshScores();
-        Looper.automation.codeHook('/api/agents/14c4a04a-5813-4766-91b8-64c6ff8c04d4/code-hook/YOUR_HOOK_TOKEN/hook-ch-19?devSessionId=YOUR_DEV_SESSION_ID', { winner: '...' }, (err, run) => {
+        Looper.automation.codeHook('/api/agents/14c4a04a-5813-4766-91b8-64c6ff8c04d4/code-hook/__TOKEN__/hook-ch-19?devSessionId=3a021509-696d-4173-bbc5-dc6a7176ec72', { winner: '...' }, (err, run) => {
   // Fires once the run is queued, then again on each poll while it's running — NOT the flow's result yet.
   if (err) console.error(err);
 }, (err, result) => {
