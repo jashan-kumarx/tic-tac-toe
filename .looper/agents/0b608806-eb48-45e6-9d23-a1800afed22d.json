@@ -16,7 +16,12 @@
           "y": 60
         },
         "config": {
-          "type": "webhook"
+          "type": "webhook",
+          "auth": {
+            "headerName": "X-Looper-Agent-Token",
+            "enabled": false,
+            "inputKey": "agent_token"
+          }
         }
       },
       {
@@ -40,8 +45,21 @@
         "source": "trg-end-01",
         "target": "end-end-01"
       }
+    ],
+    "inputs": [
+      {
+        "id": "trigger-auth-66m9r2nx",
+        "key": "agent_token",
+        "label": "Agent token",
+        "kind": "secret",
+        "secretRef": "trigger-auth-pv13vmo1",
+        "required": false
+      }
     ]
   },
   "createdAt": 1790246332577,
-  "updatedAt": 1790332128038
+  "updatedAt": 1791796265833,
+  "legacyTokensInGit": {
+    "webhook": true
+  }
 }

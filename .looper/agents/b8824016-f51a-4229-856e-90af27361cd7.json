@@ -1,0 +1,92 @@
+{
+  "id": "b8824016-f51a-4229-856e-90af27361cd7",
+  "name": "Test · 38 Prod secret redaction",
+  "description": "Security fix test (2026-10-12). Webhook → bash prints the secret input (should show [redacted:TEST38_TOKEN] in prod logs/run detail) → bash lists LOOPER_* env (LOOPER_RUNTIME_TOKEN / LOOPER_CONNECTORS_TOKEN must be absent) → Output.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "inputs": [
+      {
+        "id": "in-test38-token",
+        "key": "test_token",
+        "label": "Test token",
+        "kind": "secret",
+        "secretRef": "TEST38_TOKEN",
+        "required": true
+      }
+    ],
+    "nodes": [
+      {
+        "id": "trg-38",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "cod-secret-38",
+        "kind": "code",
+        "name": "print-secret",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "language": "bash",
+          "source": "echo \"secret=[{{input.test_token}}]\""
+        }
+      },
+      {
+        "id": "cod-env-38",
+        "kind": "code",
+        "name": "env-check",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "language": "bash",
+          "source": "echo \"LOOPER vars: $(env | grep -o '^LOOPER_[A-Z_]*' | sort | tr '\\n' ' ')\"; if env | grep -q '^LOOPER_RUNTIME_TOKEN=\\|^LOOPER_CONNECTORS_TOKEN='; then echo 'FAIL: service token visible'; else echo 'PASS: service token hidden'; fi"
+        }
+      },
+      {
+        "id": "out-38",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 80,
+          "y": 540
+        },
+        "config": {
+          "channel": "chat",
+          "body": "SECRET STEP: {{nodes.print-secret.output}}\n\nENV STEP: {{nodes.env-check.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-38-1",
+        "source": "trg-38",
+        "target": "cod-secret-38"
+      },
+      {
+        "id": "e-38-2",
+        "source": "cod-secret-38",
+        "target": "cod-env-38"
+      },
+      {
+        "id": "e-38-3",
+        "source": "cod-env-38",
+        "target": "out-38"
+      }
+    ]
+  },
+  "createdAt": 1791803228890,
+  "updatedAt": 1792042264892
+}

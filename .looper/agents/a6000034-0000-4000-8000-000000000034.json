@@ -1,0 +1,152 @@
+{
+  "id": "a6000034-0000-4000-8000-000000000034",
+  "name": "Test · 34 Bash modes (Read-only / Allow-list / Full)",
+  "description": "Checks the 3 bash modes on the Looper harness (Haiku). Three AI steps run in parallel, each tries the same kind of commands: Read-only should allow `ls`/`git status` and refuse `rm` and pipes; Allow-list (`ls*`, `git status*`) should allow only those; Full allows everything. Commands are harmless.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-34",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 320,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "ai-ro-34",
+        "kind": "ai",
+        "name": "read-only-bash",
+        "position": {
+          "x": 0,
+          "y": 240
+        },
+        "config": {
+          "instructions": "You are testing a bash permission mode. Run EACH of these commands with the bash tool, one call per command, exactly as written, even if one is refused:\n1. ls\n2. git status\n3. rm -f does-not-exist.txt\n4. ls | grep src\n\nThen reply with one line per command: `<command>` → ALLOWED or REFUSED, plus the first line of the tool result. Nothing else.",
+          "harness": "looper",
+          "model": "claude-haiku-4-5-20251001",
+          "tools": [
+            "bash"
+          ],
+          "bashMode": "readonly",
+          "maxSteps": 8
+        }
+      },
+      {
+        "id": "ai-al-34",
+        "kind": "ai",
+        "name": "allow-list-bash",
+        "position": {
+          "x": 320,
+          "y": 240
+        },
+        "config": {
+          "instructions": "You are testing a bash permission mode. Run EACH of these commands with the bash tool, one call per command, exactly as written, even if one is refused:\n1. ls\n2. git status\n3. cat package.json\n4. pwd\n\nThen reply with one line per command: `<command>` → ALLOWED or REFUSED, plus the first line of the tool result. Nothing else.",
+          "harness": "looper",
+          "model": "claude-haiku-4-5-20251001",
+          "tools": [
+            "bash"
+          ],
+          "bashMode": "allow-list",
+          "maxSteps": 8,
+          "bashAllow": [
+            "ls*",
+            "git status*"
+          ]
+        }
+      },
+      {
+        "id": "ai-full-34",
+        "kind": "ai",
+        "name": "full-bash",
+        "position": {
+          "x": 640,
+          "y": 240
+        },
+        "config": {
+          "instructions": "You are testing a bash permission mode. Run EACH of these commands with the bash tool, one call per command, exactly as written, even if one is refused:\n1. ls | head -3\n2. echo hello | tr a-z A-Z\n\nThen reply with one line per command: `<command>` → ALLOWED or REFUSED, plus the first line of the tool result. Nothing else.",
+          "harness": "looper",
+          "model": "claude-haiku-4-5-20251001",
+          "tools": [
+            "bash"
+          ],
+          "bashMode": "full",
+          "maxSteps": 8
+        }
+      },
+      {
+        "id": "join-34",
+        "kind": "join",
+        "name": "all-done",
+        "position": {
+          "x": 320,
+          "y": 400
+        },
+        "config": {
+          "policy": "all"
+        }
+      },
+      {
+        "id": "out-34",
+        "kind": "output",
+        "name": "report",
+        "position": {
+          "x": 320,
+          "y": 540
+        },
+        "config": {
+          "channel": "chat",
+          "body": "READ-ONLY:\n{{nodes.ai-ro-34.output}}\n\nALLOW-LIST (ls*, git status*):\n{{nodes.ai-al-34.output}}\n\nFULL:\n{{nodes.ai-full-34.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-ai-ro-34-in",
+        "source": "trg-34",
+        "target": "ai-ro-34"
+      },
+      {
+        "id": "e-ai-al-34-in",
+        "source": "trg-34",
+        "target": "ai-al-34"
+      },
+      {
+        "id": "e-ai-full-34-in",
+        "source": "trg-34",
+        "target": "ai-full-34"
+      },
+      {
+        "id": "e-ai-ro-34-join",
+        "source": "ai-ro-34",
+        "target": "join-34"
+      },
+      {
+        "id": "e-ai-al-34-join",
+        "source": "ai-al-34",
+        "target": "join-34"
+      },
+      {
+        "id": "e-ai-full-34-join",
+        "source": "ai-full-34",
+        "target": "join-34"
+      },
+      {
+        "id": "e-join-34-out",
+        "source": "join-34",
+        "target": "out-34"
+      }
+    ]
+  },
+  "createdAt": 1791367200000,
+  "updatedAt": 1791362127967,
+  "legacyTokensInGit": {
+    "webhook": true
+  }
+}

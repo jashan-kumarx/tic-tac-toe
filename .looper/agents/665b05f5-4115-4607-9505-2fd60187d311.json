@@ -42,5 +42,8 @@
     ]
   },
   "createdAt": 1790247338546,
-  "updatedAt": 1790247338546
+  "updatedAt": 1791176226701,
+  "legacyTokensInGit": {
+    "webhook": true
+  }
 }

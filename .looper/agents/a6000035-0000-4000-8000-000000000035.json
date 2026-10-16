@@ -1,0 +1,73 @@
+{
+  "id": "a6000035-0000-4000-8000-000000000035",
+  "name": "Test · 35 Bash read-only on Claude Agent SDK",
+  "description": "Same Read-only check on the Claude Agent SDK harness (native Bash is disallowed, our checked bash is an in-process MCP tool). Expect `ls` allowed, `rm` and the pipe refused.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-35",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 320,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "ai-cc-35",
+        "kind": "ai",
+        "name": "claude-agent-read-only",
+        "position": {
+          "x": 320,
+          "y": 240
+        },
+        "config": {
+          "instructions": "You are testing a bash permission mode. Run EACH of these commands with the bash tool, one call per command, exactly as written, even if one is refused:\n1. ls\n2. rm -f does-not-exist.txt\n3. ls | grep src\n\nThen reply with one line per command: `<command>` → ALLOWED or REFUSED, plus the first line of the tool result. Nothing else.",
+          "harness": "claude-agent",
+          "model": "claude-haiku-4-5-20251001",
+          "tools": [
+            "bash"
+          ],
+          "bashMode": "readonly",
+          "maxSteps": 8
+        }
+      },
+      {
+        "id": "out-35",
+        "kind": "output",
+        "name": "report",
+        "position": {
+          "x": 320,
+          "y": 420
+        },
+        "config": {
+          "channel": "chat",
+          "body": "CLAUDE AGENT SDK READ-ONLY:\n{{nodes.ai-cc-35.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-ai-cc-35-in",
+        "source": "trg-35",
+        "target": "ai-cc-35"
+      },
+      {
+        "id": "e-ai-cc-35-out",
+        "source": "ai-cc-35",
+        "target": "out-35"
+      }
+    ]
+  },
+  "createdAt": 1791367200000,
+  "updatedAt": 1791356821023,
+  "legacyTokensInGit": {
+    "webhook": true
+  }
+}

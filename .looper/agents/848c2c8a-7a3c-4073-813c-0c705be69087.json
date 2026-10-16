@@ -1,0 +1,104 @@
+{
+  "id": "848c2c8a-7a3c-4073-813c-0c705be69087",
+  "name": "Test · D81 outbox (slow run)",
+  "description": "D81 restart test (2026-10-12). Webhook → stamp start → 40s slow step (restart looper-control on EC2 during it) → stamp end → Output. Pass = run still shows Completed in Run history with both timestamps.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "inputs": [],
+    "nodes": [
+      {
+        "id": "trg-d81",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 80,
+          "y": 60
+        },
+        "config": {
+          "type": "webhook"
+        }
+      },
+      {
+        "id": "cod-start-d81",
+        "kind": "code",
+        "name": "stamp-start",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "language": "bash",
+          "source": "date -u +%H:%M:%S"
+        }
+      },
+      {
+        "id": "cod-slow-d81",
+        "kind": "code",
+        "name": "slow-step",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "language": "bash",
+          "source": "for i in 1 2 3 4 5 6 7 8; do sleep 5; echo \"tick $i at $(date -u +%H:%M:%S)\"; done"
+        }
+      },
+      {
+        "id": "cod-end-d81",
+        "kind": "code",
+        "name": "stamp-end",
+        "position": {
+          "x": 80,
+          "y": 540
+        },
+        "config": {
+          "language": "bash",
+          "source": "date -u +%H:%M:%S"
+        }
+      },
+      {
+        "id": "out-d81",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 80,
+          "y": 700
+        },
+        "config": {
+          "channel": "chat",
+          "body": "START: {{nodes.stamp-start.output}}\n\nSLOW STEP:\n{{nodes.slow-step.output}}\n\nEND: {{nodes.stamp-end.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-d81-1",
+        "source": "trg-d81",
+        "target": "cod-start-d81"
+      },
+      {
+        "id": "e-d81-2",
+        "source": "cod-start-d81",
+        "target": "cod-slow-d81"
+      },
+      {
+        "id": "e-d81-3",
+        "source": "cod-slow-d81",
+        "target": "cod-end-d81"
+      },
+      {
+        "id": "e-d81-4",
+        "source": "cod-end-d81",
+        "target": "out-d81"
+      }
+    ]
+  },
+  "createdAt": 1791807189517,
+  "updatedAt": 1791807258578,
+  "legacyTokensInGit": {
+    "webhook": true
+  }
+}

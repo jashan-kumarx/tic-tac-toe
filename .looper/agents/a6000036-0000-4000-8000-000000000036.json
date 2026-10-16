@@ -1,0 +1,142 @@
+{
+  "id": "a6000036-0000-4000-8000-000000000036",
+  "name": "Test · 36 Header placeholders (gap 1)",
+  "description": "Gap 1 test. Webhook reads x-api-key, x-request-id, authorization (all Sink only). AI step must see {{secret.TRIGGER_HEADER_*}} placeholders, never values; code and HTTP steps get the real value but their output is redacted; authorization is always stripped.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-36",
+        "kind": "trigger",
+        "name": "webhook-start",
+        "position": {
+          "x": 0,
+          "y": 0
+        },
+        "config": {
+          "type": "webhook",
+          "captureHeaders": {
+            "enabled": true,
+            "mode": "selected",
+            "allow": [
+              "x-api-key",
+              "x-request-id",
+              "authorization"
+            ],
+            "plain": [
+              "x-request-id"
+            ]
+          },
+          "auth": {
+            "headerName": "X-Looper-Agent-Token",
+            "enabled": true,
+            "inputKey": "agent_token"
+          }
+        }
+      },
+      {
+        "id": "ai-36",
+        "kind": "ai",
+        "name": "ai-step",
+        "position": {
+          "x": 0,
+          "y": 420
+        },
+        "config": {
+          "instructions": "Repeat exactly: key={{trigger.headers.x-api-key}} req={{trigger.headers.x-request-id}}",
+          "harness": "looper",
+          "model": "claude-haiku-4-5-20251001",
+          "maxSteps": 4,
+          "tools": []
+        }
+      },
+      {
+        "id": "cod-36",
+        "kind": "code",
+        "name": "code-step",
+        "position": {
+          "x": 0,
+          "y": 140
+        },
+        "config": {
+          "language": "bash",
+          "source": "echo -n \"{{trigger.headers.x-api-key}}\" | wc -c; echo \"raw=[{{trigger.headers.x-api-key}}]\""
+        }
+      },
+      {
+        "id": "htp-36",
+        "kind": "http",
+        "name": "http-step",
+        "position": {
+          "x": 0,
+          "y": 280
+        },
+        "config": {
+          "method": "GET",
+          "url": "https://httpbin.org/anything",
+          "headers": {
+            "X-Fwd-Key": "{{trigger.headers.x-api-key}}"
+          },
+          "onError": "fail"
+        }
+      },
+      {
+        "id": "out-36",
+        "kind": "output",
+        "name": "report",
+        "position": {
+          "x": 0,
+          "y": 560
+        },
+        "config": {
+          "channel": "chat",
+          "body": "AI: {{nodes.ai-step.output}}\n\nCODE: {{nodes.code-step.output}}\n\nHTTP: {{nodes.http-step.text}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1",
+        "source": "trg-36",
+        "target": "cod-36"
+      },
+      {
+        "id": "e2",
+        "source": "cod-36",
+        "target": "htp-36"
+      },
+      {
+        "id": "e3",
+        "source": "htp-36",
+        "target": "ai-36"
+      },
+      {
+        "id": "e4",
+        "source": "ai-36",
+        "target": "out-36"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "trigger-auth-jqmpvukt",
+        "key": "agent_token",
+        "label": "Agent token",
+        "kind": "secret",
+        "secretRef": "trigger-auth-eu8k1v4d",
+        "required": true
+      },
+      {
+        "id": "input_muz7youq",
+        "key": "api_pass",
+        "label": "API_PASS",
+        "kind": "secret",
+        "required": true,
+        "secretRef": "API_PASS"
+      }
+    ]
+  },
+  "createdAt": 1791436519824,
+  "updatedAt": 1791974032508
+}

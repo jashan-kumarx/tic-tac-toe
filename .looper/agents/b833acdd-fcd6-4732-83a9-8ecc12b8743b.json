@@ -1,11 +1,11 @@
 {
   "id": "b833acdd-fcd6-4732-83a9-8ecc12b8743b",
-  "name": "Test \u00b7 21 Two code hooks (A5)",
-  "description": "A5 test \u2014 two code-hook triggers on one agent. hook-a \u2192 'Branch A ran (from: {{input.from}})', hook-b \u2192 'Branch B ran (from: {{input.from}})'. Calling one hook must run only its own branch. Header auth is OFF.",
+  "name": "Test · 21 Two code hooks (A5)",
+  "description": "A5 test — two code-hook triggers on one agent. hook-a → 'Branch A ran (from: {{input.from}})', hook-b → 'Branch B ran (from: {{input.from}})'. Calling one hook must run only its own branch. Header auth is OFF.",
   "enabled": true,
   "folderId": null,
   "createdAt": 1790397174268,
-  "updatedAt": 1790397174268,
+  "updatedAt": 1791452694365,
   "definition": {
     "schemaVersion": "2.0",
     "nodes": [
@@ -40,7 +40,8 @@
             "headerName": "X-Looper-Agent-Token",
             "enabled": false,
             "inputKey": "agent_token"
-          }
+          },
+          "browserAccess": "none"
         }
       },
       {

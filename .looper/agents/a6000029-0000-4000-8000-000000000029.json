@@ -5,7 +5,7 @@
   "enabled": true,
   "folderId": null,
   "createdAt": 1790746795088,
-  "updatedAt": 1790747418908,
+  "updatedAt": 1791282280496,
   "definition": {
     "schemaVersion": "2.0",
     "nodes": [
@@ -67,5 +67,8 @@
       }
     ],
     "missingInputs": "fail"
+  },
+  "legacyTokensInGit": {
+    "webhook": true
   }
 }

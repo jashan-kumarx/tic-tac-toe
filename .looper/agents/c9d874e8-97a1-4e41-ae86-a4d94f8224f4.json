@@ -1,7 +1,7 @@
 {
   "id": "c9d874e8-97a1-4e41-ae86-a4d94f8224f4",
-  "name": "Test \u00b7 13 AI agent",
-  "description": "Node test #13 \u2014 AI agent. Webhook \u2192 AI agent (Looper harness, Claude Haiku 4.5, no tools) answers {{trigger.message}} in one short sentence \u2192 Output.",
+  "name": "Test · 13 AI agent",
+  "description": "Node test #13 — AI agent. Webhook → AI agent (Looper harness, Claude Haiku 4.5, no tools) answers {{trigger.message}} in one short sentence → Output.",
   "enabled": true,
   "folderId": null,
   "definition": {
@@ -62,5 +62,5 @@
     ]
   },
   "createdAt": 1790310825666,
-  "updatedAt": 1790310825666
+  "updatedAt": 1791352308799
 }

@@ -1,20 +1,18 @@
 {
   "id": "a6000030-0000-4000-8000-000000000030",
-  "name": "Test · 30 Runtime inputs (ask)",
-  "description": "Runtime-inputs test, missing = Ask a person. Same inputs as #29. In production a missing customer_name pauses the run (Waiting) until someone fills it in from Agent runs.",
+  "name": "Test · 30 Temperature, max tokens & effort",
+  "description": "Cheap check of the new AI/LLM step settings. Webhook → LLM (Sonnet 5, thinking None, 40 max tokens) → AI agent (Haiku 4.5, temperature 0.2, 60 max tokens, no tools) → Output. Each step answers in a few words.",
   "enabled": true,
   "folderId": null,
-  "createdAt": 1790746795088,
-  "updatedAt": 1790747418939,
   "definition": {
     "schemaVersion": "2.0",
     "nodes": [
       {
-        "id": "trg-rt-30",
+        "id": "trg-eff-30",
         "kind": "trigger",
         "name": "webhook-start",
         "position": {
-          "x": 240,
+          "x": 80,
           "y": 60
         },
         "config": {
@@ -22,50 +20,72 @@
         }
       },
       {
-        "id": "out-rt-30",
+        "id": "llm-none-30",
+        "kind": "llm",
+        "name": "sonnet-no-thinking",
+        "position": {
+          "x": 80,
+          "y": 220
+        },
+        "config": {
+          "prompt": "Reply in at most 5 words, nothing else: {{trigger.message}}",
+          "model": "claude-sonnet-5",
+          "effort": "none",
+          "maxTokens": 40
+        }
+      },
+      {
+        "id": "ai-temp-30",
+        "kind": "ai",
+        "name": "haiku-temperature",
+        "position": {
+          "x": 80,
+          "y": 380
+        },
+        "config": {
+          "instructions": "Reply in at most 5 words, nothing else: {{trigger.message}}",
+          "harness": "looper",
+          "model": "claude-haiku-4-5-20251001",
+          "tools": [],
+          "temperature": 0.2,
+          "maxTokens": 60
+        }
+      },
+      {
+        "id": "out-eff-30",
         "kind": "output",
         "name": "reply",
         "position": {
-          "x": 240,
-          "y": 240
+          "x": 80,
+          "y": 540
         },
         "config": {
           "channel": "chat",
-          "body": "{{input.greeting}} {{input.customer_name}} ✅ — order: [{{input.order_id}}]"
+          "body": "Sonnet (no thinking): {{nodes.llm-none-30.output}}\nHaiku (temp 0.2): {{nodes.ai-temp-30.output}}"
         }
       }
     ],
     "edges": [
       {
-        "id": "e-rt-30",
-        "source": "trg-rt-30",
-        "target": "out-rt-30"
-      }
-    ],
-    "inputs": [
-      {
-        "id": "in-customer-name",
-        "key": "customer_name",
-        "label": "Customer name",
-        "kind": "runtime",
-        "required": true
+        "id": "e-eff-30-1",
+        "source": "trg-eff-30",
+        "target": "llm-none-30"
       },
       {
-        "id": "in-order-id",
-        "key": "order_id",
-        "label": "Order id",
-        "kind": "runtime",
-        "required": false
+        "id": "e-eff-30-2",
+        "source": "llm-none-30",
+        "target": "ai-temp-30"
       },
       {
-        "id": "in-greeting",
-        "key": "greeting",
-        "label": "Greeting",
-        "kind": "constant",
-        "value": "Hello",
-        "required": true
+        "id": "e-eff-30-3",
+        "source": "ai-temp-30",
+        "target": "out-eff-30"
       }
-    ],
-    "missingInputs": "ask"
+    ]
+  },
+  "createdAt": 1791345600000,
+  "updatedAt": 1791356255540,
+  "legacyTokensInGit": {
+    "webhook": true
   }
 }

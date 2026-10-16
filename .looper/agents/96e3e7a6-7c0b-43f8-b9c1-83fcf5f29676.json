@@ -1,7 +1,7 @@
 {
   "id": "96e3e7a6-7c0b-43f8-b9c1-83fcf5f29676",
-  "name": "Test \u00b7 12 LLM",
-  "description": "Node test #12 \u2014 LLM step. Webhook \u2192 LLM step (Claude Haiku 4.5, direct provider call, no tools) replies to {{trigger.message}} in at most 5 words \u2192 Output.",
+  "name": "Test · 12 LLM",
+  "description": "Node test #12 — LLM step. Webhook → LLM step (Claude Haiku 4.5, direct provider call, no tools) replies to {{trigger.message}} in at most 5 words → Output.",
   "enabled": true,
   "folderId": null,
   "definition": {
@@ -30,7 +30,8 @@
         "config": {
           "systemPrompt": "",
           "prompt": "Reply to this message in at most 5 words, nothing else: {{trigger.message}}",
-          "model": "claude-haiku-4-5-20251001"
+          "model": "claude-haiku-4-5-20251001",
+          "temperature": 0.5
         }
       },
       {
@@ -61,5 +62,8 @@
     ]
   },
   "createdAt": 1790310224398,
-  "updatedAt": 1790310224398
+  "updatedAt": 1791352363802,
+  "legacyTokensInGit": {
+    "webhook": true
+  }
 }

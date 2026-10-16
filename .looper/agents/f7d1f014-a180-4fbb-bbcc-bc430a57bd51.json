@@ -1,7 +1,7 @@
 {
   "id": "f7d1f014-a180-4fbb-bbcc-bc430a57bd51",
-  "name": "Test \u00b7 04 Code",
-  "description": "Node test #4 \u2014 Code (both languages). Webhook body {\"name\":\"Ada\"} \u2192 bash step echoes the name + OS \u2192 JS step reads the raw body from scope and returns upper-cased JSON \u2192 Output combines both.",
+  "name": "Test · 04 Code",
+  "description": "Node test #4 — Code (both languages). Webhook body {\"name\":\"Ada\"} → bash step echoes the name + OS → JS step reads the raw body from scope and returns upper-cased JSON → Output combines both.",
   "enabled": true,
   "folderId": null,
   "definition": {
@@ -78,5 +78,5 @@
     ]
   },
   "createdAt": 1790248786375,
-  "updatedAt": 1790249210576
+  "updatedAt": 1792044261936
 }

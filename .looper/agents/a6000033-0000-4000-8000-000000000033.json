@@ -1,0 +1,65 @@
+{
+  "id": "a6000033-0000-4000-8000-000000000033",
+  "name": "Test · 33 Circuit breaker (always fails)",
+  "description": "Circuit-breaker repro. Manual trigger → JS step that always throws, so every run fails. Trigger it 3 times in Production and the agent gets paused.",
+  "enabled": true,
+  "folderId": null,
+  "createdAt": 1791282848675,
+  "updatedAt": 1791286508870,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-cb-33",
+        "kind": "trigger",
+        "name": "manual-start",
+        "position": {
+          "x": 240,
+          "y": 60
+        },
+        "config": {
+          "type": "manual"
+        }
+      },
+      {
+        "id": "cod-cb-33",
+        "kind": "code",
+        "name": "always-fail",
+        "position": {
+          "x": 240,
+          "y": 220
+        },
+        "config": {
+          "language": "js",
+          "source": "throw new Error('Intentional failure for the circuit-breaker test');"
+        }
+      },
+      {
+        "id": "out-cb-33",
+        "kind": "output",
+        "name": "reply",
+        "position": {
+          "x": 240,
+          "y": 380
+        },
+        "config": {
+          "channel": "chat",
+          "body": "You should never see this"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e-trg-cb",
+        "source": "trg-cb-33",
+        "target": "cod-cb-33"
+      },
+      {
+        "id": "e-cb-out",
+        "source": "cod-cb-33",
+        "target": "out-cb-33"
+      }
+    ],
+    "pauseAfterFailures": 0
+  }
+}

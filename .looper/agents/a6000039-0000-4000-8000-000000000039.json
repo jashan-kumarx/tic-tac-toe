@@ -1,0 +1,153 @@
+{
+  "id": "a6000039-0000-4000-8000-000000000039",
+  "name": "Test \u00b7 39 Bridge token not in env (2.6)",
+  "description": "Fix 2.6 check. Two AI steps (Looper harness, Claude Agent SDK) list the LOOPER_* env NAMES their bash sees. Expect neither list to contain LOOPER_RUNTIME_BRIDGE_TOKEN or LOOPER_AGENT_TOKEN. PID1 list is shown for reference only (known open item: initial container env). Has an authenticated code-hook trigger (hook-39) so publish emits LOOPER_CODE_HOOK_TOKEN_* / URL_TOKEN_* (item 4): they must show in PID1 but not in ENV (this process). Run it with the manual trigger.",
+  "enabled": true,
+  "folderId": null,
+  "definition": {
+    "schemaVersion": "2.0",
+    "nodes": [
+      {
+        "id": "trg-39",
+        "kind": "trigger",
+        "name": "manual-start",
+        "position": {
+          "x": 320,
+          "y": 60
+        },
+        "config": {
+          "type": "manual"
+        }
+      },
+      {
+        "id": "hook-39",
+        "kind": "trigger",
+        "name": "code-hook-auth",
+        "position": {
+          "x": 720,
+          "y": 60
+        },
+        "config": {
+          "type": "code_hook",
+          "auth": {
+            "headerName": "X-Looper-Agent-Token",
+            "enabled": true,
+            "inputKey": "agent_token"
+          }
+        }
+      },
+      {
+        "id": "ai-lp-39",
+        "kind": "ai",
+        "name": "looper-harness-env",
+        "position": {
+          "x": 120,
+          "y": 220
+        },
+        "config": {
+          "instructions": "You are checking which LOOPER_ environment variables a process can see. Run EACH command below with the bash tool, one call per command, exactly as written (they print variable NAMES only, never values):\n1. env | grep -o \"^LOOPER_[A-Z_]*\" | sort\n2. tr \"\\\\0\" \"\\\\n\" < /proc/1/environ | grep -o \"^LOOPER_[A-Z_]*\" | sort\n\nReply in exactly this form and nothing else:\nENV (this process): <names, comma separated, or NONE>\nPID1 (container start env): <names, comma separated, or NONE / ERROR + first line of error>",
+          "harness": "looper",
+          "model": "claude-haiku-4-5-20251001",
+          "tools": [
+            "bash"
+          ],
+          "bashMode": "full",
+          "maxSteps": 6
+        }
+      },
+      {
+        "id": "ai-cs-39",
+        "kind": "ai",
+        "name": "claude-sdk-env",
+        "position": {
+          "x": 520,
+          "y": 220
+        },
+        "config": {
+          "instructions": "You are checking which LOOPER_ environment variables a process can see. Run EACH command below with the bash tool, one call per command, exactly as written (they print variable NAMES only, never values):\n1. env | grep -o \"^LOOPER_[A-Z_]*\" | sort\n2. tr \"\\\\0\" \"\\\\n\" < /proc/1/environ | grep -o \"^LOOPER_[A-Z_]*\" | sort\n\nReply in exactly this form and nothing else:\nENV (this process): <names, comma separated, or NONE>\nPID1 (container start env): <names, comma separated, or NONE / ERROR + first line of error>",
+          "harness": "claude-agent",
+          "model": "claude-haiku-4-5-20251001",
+          "tools": [
+            "bash"
+          ],
+          "bashMode": "full",
+          "maxSteps": 6
+        }
+      },
+      {
+        "id": "join-39",
+        "kind": "join",
+        "name": "all-done",
+        "position": {
+          "x": 320,
+          "y": 400
+        },
+        "config": {
+          "policy": "all"
+        }
+      },
+      {
+        "id": "out-39",
+        "kind": "output",
+        "name": "report",
+        "position": {
+          "x": 320,
+          "y": 540
+        },
+        "config": {
+          "channel": "chat",
+          "body": "LOOPER HARNESS:\n{{nodes.ai-lp-39.output}}\n\nCLAUDE AGENT SDK:\n{{nodes.ai-cs-39.output}}"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "e1-39",
+        "source": "trg-39",
+        "target": "ai-lp-39"
+      },
+      {
+        "id": "e2-39",
+        "source": "trg-39",
+        "target": "ai-cs-39"
+      },
+      {
+        "id": "e3-39",
+        "source": "ai-lp-39",
+        "target": "join-39"
+      },
+      {
+        "id": "e4-39",
+        "source": "ai-cs-39",
+        "target": "join-39"
+      },
+      {
+        "id": "e5-39",
+        "source": "join-39",
+        "target": "out-39"
+      },
+      {
+        "id": "e6-39",
+        "source": "hook-39",
+        "target": "ai-lp-39"
+      },
+      {
+        "id": "e7-39",
+        "source": "hook-39",
+        "target": "ai-cs-39"
+      }
+    ],
+    "inputs": [
+      {
+        "id": "in-tok-39",
+        "key": "agent_token",
+        "label": "Agent token",
+        "kind": "secret",
+        "secretRef": "trigger-auth-a6ref",
+        "required": false
+      }
+    ]
+  },
+  "createdAt": 1792060277044,
+  "updatedAt": 1792060277044
+}
