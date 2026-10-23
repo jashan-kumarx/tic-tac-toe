@@ -4,6 +4,7 @@ import Board from "./components/Board";
 import AiEmailPanel from "./components/AiEmailPanel";
 import { parseScores, describeScoreError } from "./lib/scores.mjs";
 
+
 const App = () => {
   const [history, setHistory] = useState([
     {
