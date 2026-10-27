@@ -14,7 +14,8 @@ A complete, interactive Tic Tac Toe game built with React using functional compo
 ✅ **Move Validation** - Prevents moves on filled squares  
 ✅ **Move History** - Track all moves made during the game  
 ✅ **Time Travel** - Jump back to any previous move  
-✅ **Clean UI** - Simple and responsive design with CSS styling
+✅ **Clean UI** - Simple and responsive design with CSS styling  
+✅ **Score API** - Express + Postgres backend for persisting scores
 
 ## Project Structure
 
